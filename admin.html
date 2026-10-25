@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Control — Mi Tienda Oficial</title>
+  <meta name="description" content="Panel de administración de tienda e-commerce: métricas en tiempo real, inventario, costos, proveedores e inversión.">
+
+  <!-- Google Fonts: Inter, Outfit, Playfair Display, Space Grotesk, Plus Jakarta Sans, Syne -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Admin Stylesheet -->
+  <link rel="stylesheet" href="admin.css?v=7">
+</head>
+<body>
+
+  <!-- ==================================================================
+       SIDEBAR NAVIGATION
+       ================================================================== -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-logo-box">⚡</div>
+      <div class="admin-brand-text">
+        <span id="sideBrandName">Mi Tienda Oficial</span>
+        <span class="admin-brand-tag">Panel de Control</span>
+      </div>
+    </div>
+
+    <nav class="admin-nav-menu">
+      <div class="nav-section-title">Operaciones</div>
+      
+      <a class="admin-nav-item active" data-view="dashboard">
+        <span class="nav-item-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a class="admin-nav-item" data-view="productos">
+        <span class="nav-item-icon">🏷️</span>
+        <span>Productos</span>
+        <span class="nav-item-badge" id="sideProdCount">0</span>
+      </a>
+
+      <a class="admin-nav-item" data-view="ordenes">
+        <span class="nav-item-icon">📑</span>
+        <span>Órdenes & Pedidos</span>
+        <span class="nav-item-badge" id="sideOrdersCount" style="background: var(--admin-emerald);">0</span>
+      </a>
+
+      <a class="admin-nav-item" data-view="inventario">
+        <span class="nav-item-icon">📦</span>
+        <span>Mercancía & Ganancias</span>
+      </a>
+
+      <a class="admin-nav-item" data-view="proveedores">
+        <span class="nav-item-icon">🤝</span>
+        <span>Proveedores & Inversión</span>
+        <span class="nav-item-badge" id="sideSuppliersCount" style="background: var(--admin-primary);">4</span>
+      </a>
+
+      <div class="nav-section-title">Configuración</div>
+
+      <a class="admin-nav-item" data-view="personalizar">
+        <span class="nav-item-icon">🎨</span>
+        <span>Personalizar Tienda</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar User Profile & Logout -->
+    <div class="admin-sidebar-footer">
+      <div class="admin-avatar">👑</div>
+      <div class="admin-user-info" style="flex: 1; overflow: hidden;">
+        <span class="admin-user-name" id="adminSidebarName">Daniel Campos</span>
+        <span class="admin-user-role">Dueño / Administrador</span>
+      </div>
+      <button class="btn-admin-logout-sidebar" onclick="admin.logout()" title="Cerrar sesión de Administrador (Desloguear)">
+        <span>🚪 Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrap -->
+  <div class="admin-main-wrap">
+    
+    <!-- Top Administrative Header -->
+    <header class="admin-top-bar">
+      <div class="admin-top-left">
+        <div class="admin-store-pill">
+          <span style="font-size: 0.85rem; font-weight: 800; color: var(--admin-text-main);" id="adminStoreHeaderName">🛍️ Mi Tienda Oficial</span>
+          <span class="badge-status active" style="font-size: 0.72rem; padding: 2px 8px;">En Línea</span>
+        </div>
+
+        <div class="admin-status-sync">
+          <span class="pulse-dot-green"></span>
+          <span>Sincronizado con Tienda en Vivo</span>
+        </div>
+      </div>
+
+      <div class="admin-top-actions">
+        <a href="index.html" class="btn-view-storefront" target="_blank" title="Abrir la tienda orientada al cliente">
+          <span>👁️ Ver Tienda Pública</span>
+          <span>↗</span>
+        </a>
+        <button class="btn-admin-header-logout" onclick="admin.logout()" title="Cerrar sesión de administrador y regresar a la tienda pública">
+          <span>🚪 Cerrar Sesión</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin Body Views -->
+    <main class="admin-body">
+      
+      <!-- ==================================================================
+           VIEW 1: DASHBOARD (MÉTRICAS & KPIS)
+           ================================================================== -->
+      <section id="viewDashboard" class="admin-view-panel">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Panel de Control & Rendimiento</h1>
+            <p class="module-desc">Métricas consolidadas de ventas, pedidos, rotación de catálogo y márgenes de ganancia.</p>
+          </div>
+          <button class="btn-admin-primary" onclick="admin.openNewProductModal()">
+            <span>+ Nuevo Producto</span>
+          </button>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="kpi-cards-grid">
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Ventas Totales</span>
+              <div class="kpi-icon-box" style="background: rgba(37, 99, 235, 0.1); color: var(--admin-primary);">💰</div>
+            </div>
+            <div class="kpi-value" id="kpiSales">$0.00</div>
+            <div class="kpi-trend positive">
+              <span>↑ +18.4%</span>
+              <span style="color: var(--admin-text-muted); font-weight: 500;">vs mes anterior</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Total Pedidos</span>
+              <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-emerald);">📑</div>
+            </div>
+            <div class="kpi-value" id="kpiOrders">0</div>
+            <div class="kpi-trend positive">
+              <span>↑ 96.2%</span>
+              <span style="color: var(--admin-text-muted); font-weight: 500;">tasa de entrega</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Inversión en Mercancía</span>
+              <div class="kpi-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--admin-amber);">💼</div>
+            </div>
+            <div class="kpi-value" id="kpiStockCost">$0.00</div>
+            <div class="kpi-trend neutral">
+              <span id="kpiStockUnitsText">0 unidades en stock</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Ganancia Neta en Stock</span>
+              <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-emerald);">💎</div>
+            </div>
+            <div class="kpi-value" id="kpiStockProfit" style="color: var(--admin-emerald);">$0.00</div>
+            <div class="kpi-trend positive">
+              <span id="kpiAvgMarginText">↑ 54.2% margen prom</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Chart & Category Distribution Widget -->
+        <div class="dashboard-widgets-grid">
+          <!-- Sales Curve Widget -->
+          <div class="widget-card">
+            <div class="widget-header">
+              <h3 class="widget-title">Evolución de Ventas Semanales</h3>
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--admin-primary); background: var(--admin-bg); padding: 4px 10px; border-radius: var(--radius-full);">
+                Últimos 7 días
+              </span>
+            </div>
+            
+            <div class="chart-container">
+              <svg class="sales-chart-svg" viewBox="0 0 500 180" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                  </linearGradient>
+                </defs>
+                <!-- Grid Lines -->
+                <line x1="0" y1="40" x2="500" y2="40" stroke="#f1f5f9" stroke-width="1" />
+                <line x1="0" y1="90" x2="500" y2="90" stroke="#f1f5f9" stroke-width="1" />
+                <line x1="0" y1="140" x2="500" y2="140" stroke="#f1f5f9" stroke-width="1" />
+                
+                <!-- Area Fill -->
+                <polygon points="0,150 70,120 140,135 210,80 280,95 350,45 430,60 500,20 500,180 0,180" fill="url(#chartGrad)"/>
+                
+                <!-- Polyline Curve -->
+                <polyline points="0,150 70,120 140,135 210,80 280,95 350,45 430,60 500,20" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- Data Points -->
+                <circle cx="70" cy="120" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="140" cy="135" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="210" cy="80" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="280" cy="95" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="350" cy="45" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="430" cy="60" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="500" cy="20" r="4" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+              </svg>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--admin-text-muted); font-weight: 700; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--admin-border);">
+              <span>Lun ($1,240)</span>
+              <span>Mar ($2,100)</span>
+              <span>Mié ($1,850)</span>
+              <span>Jue ($3,400)</span>
+              <span>Vie ($3,120)</span>
+              <span>Sáb ($4,850)</span>
+              <span>Dom ($5,900)</span>
+            </div>
+          </div>
+
+          <!-- Category Performance Card (Single Store) -->
+          <div class="widget-card">
+            <div class="widget-header">
+              <h3 class="widget-title">Ventas por Categoría</h3>
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--admin-emerald); background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: var(--radius-full);">
+                Mes Actual
+              </span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+                  <span>🎧 Audio & Sonido</span>
+                  <span style="color: var(--admin-primary);">$14,250.00 (55%)</span>
+                </div>
+                <div style="height: 8px; background: var(--admin-bg); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 55%; height: 100%; background: #2563eb; border-radius: var(--radius-full);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+                  <span>⌚ Smartwatches & Wearables</span>
+                  <span style="color: var(--admin-primary);">$7,120.00 (27%)</span>
+                </div>
+                <div style="height: 8px; background: var(--admin-bg); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 27%; height: 100%; background: #8b5cf6; border-radius: var(--radius-full);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+                  <span>⌨️ Setup, Bolsos & Hogar</span>
+                  <span style="color: var(--admin-primary);">$4,687.29 (18%)</span>
+                </div>
+                <div style="height: 8px; background: var(--admin-bg); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 18%; height: 100%; background: #10b981; border-radius: var(--radius-full);"></div>
+                </div>
+              </div>
+
+              <div style="margin-top: 10px; padding: 14px; background: var(--admin-bg); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--admin-text-muted);">
+                💡 <strong>Consejo Comercial:</strong> Los fines de semana concentran el mayor volumen de compras en línea. Ofrecer envíos prioritarios o cupones los viernes impulsa las ventas hasta un 24%.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Mini-Table -->
+        <div class="table-card">
+          <div style="padding: 20px 24px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="widget-title" style="margin: 0;">Últimos Pedidos Registrados</h3>
+            <button class="btn-table-action" onclick="admin.switchView('ordenes')">Ver Todas las Órdenes →</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nº Orden</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Artículos</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="recentOrdersTableBody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW 2: PRODUCTOS (CATÁLOGO PROPIO)
+           ================================================================== -->
+      <section id="viewProductos" class="admin-view-panel" style="display: none;">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Catálogo de Productos</h1>
+            <p class="module-desc">Administra el inventario de tu tienda, precios de venta, costos al proveedor y disponibilidad.</p>
+          </div>
+          <button class="btn-admin-primary" onclick="admin.openNewProductModal()">
+            <span>+ Nuevo Producto</span>
+          </button>
+        </div>
+
+        <div class="table-card">
+          <!-- Filters Bar -->
+          <div class="table-toolbar">
+            <div class="search-input-wrap">
+              <span>🔍</span>
+              <input type="text" id="adminProdSearch" placeholder="Buscar por nombre, SKU o marca..." class="table-search-input">
+            </div>
+            <div style="font-size: 0.85rem; color: var(--admin-text-muted); font-weight: 600;">
+              Total productos: <span id="adminProdTotalText" style="color: var(--admin-primary); font-weight: 800;">0</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>SKU</th>
+                  <th>Categoría</th>
+                  <th>Costo Compra</th>
+                  <th>Precio Venta</th>
+                  <th>Ganancia</th>
+                  <th>Stock</th>
+                  <th>Proveedor</th>
+                  <th style="text-align: right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="adminProductsTableBody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW 3: ÓRDENES & PEDIDOS
+           ================================================================== -->
+      <section id="viewOrdenes" class="admin-view-panel" style="display: none;">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Gestión de Órdenes & Pedidos</h1>
+            <p class="module-desc">Seguimiento de compras de tus clientes, pagos y cambios de estado de entrega.</p>
+          </div>
+          <button class="btn-admin-primary" onclick="admin.simulateNewOrder()">
+            <span>+ Simular Nuevo Pedido</span>
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="search-input-wrap">
+              <span>🔍</span>
+              <input type="text" id="adminOrderSearch" placeholder="Buscar por cliente, N° orden o teléfono..." class="table-search-input">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nº Orden</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Contacto & Envío</th>
+                  <th>Total</th>
+                  <th>Método Pago</th>
+                  <th>Estado del Pedido</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersTableBody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW 4: MERCANCÍA, COSTOS & RENTABILIDAD
+           ================================================================== -->
+      <section id="viewInventario" class="admin-view-panel" style="display: none;">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Mercancía Disponible, Costos & Ganancias</h1>
+            <p class="module-desc">Control exacto de cuánto te cuesta adquirir cada producto al proveedor, el precio de venta y la ganancia bruta proyectada.</p>
+          </div>
+          <button class="btn-admin-primary" onclick="admin.openNewPurchaseModal()">
+            <span>+ Registrar Entrada de Mercancía</span>
+          </button>
+        </div>
+
+        <!-- 4 Profitability KPI Cards -->
+        <div class="kpi-cards-grid" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Mercancía en Almacén</span>
+              <div class="kpi-icon-box" style="background: rgba(37, 99, 235, 0.1); color: var(--admin-primary);">📦</div>
+            </div>
+            <div class="kpi-value" id="invTotalUnits">0</div>
+            <div class="kpi-trend neutral"><span>Unidades físicas disponibles</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Costo Adquisición Total</span>
+              <div class="kpi-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--admin-amber);">💼</div>
+            </div>
+            <div class="kpi-value" id="invTotalCost">$0.00</div>
+            <div class="kpi-trend neutral"><span style="color: var(--admin-text-muted);">Capital invertido en stock</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Valor de Venta Total (PVP)</span>
+              <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.1); color: var(--admin-purple);">🏷️</div>
+            </div>
+            <div class="kpi-value" id="invTotalRevenue">$0.00</div>
+            <div class="kpi-trend positive"><span>Recaudación proyectada</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Ganancia Neta Proyectada</span>
+              <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-emerald);">💎</div>
+            </div>
+            <div class="kpi-value" id="invTotalProfit" style="color: var(--admin-emerald);">$0.00</div>
+            <div class="kpi-trend positive" id="invProfitMarginTrend"><span>Margen prom: 54.2%</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Producto & SKU</th>
+                  <th>Proveedor</th>
+                  <th>Existencias</th>
+                  <th>Costo Compra</th>
+                  <th>Precio Venta</th>
+                  <th>Ganancia Unit.</th>
+                  <th>Margen</th>
+                  <th>Capital Invertido</th>
+                  <th>Ganancia Total</th>
+                  <th style="text-align: right;">Ajustar Stock</th>
+                </tr>
+              </thead>
+              <tbody id="adminInventoryTableBody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW 5: PROVEEDORES & REGISTRO DE INVERSIÓN
+           ================================================================== -->
+      <section id="viewProveedores" class="admin-view-panel" style="display: none;">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Proveedores & Registro de Inversión</h1>
+            <p class="module-desc">Historial de capital invertido en compras de mercancía, condiciones comerciales y catálogo de proveedores aliados.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-admin-primary" onclick="admin.openNewPurchaseModal()">
+              <span>+ Registrar Inversión / Compra</span>
+            </button>
+            <button onclick="admin.openNewSupplierModal()" style="padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border); background: #ffffff; font-weight: 700; cursor: pointer; color: var(--admin-text-main); font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+              <span>🏢 + Nuevo Proveedor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Investment KPI Cards -->
+        <div class="kpi-cards-grid" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Capital Total Invertido</span>
+              <div class="kpi-icon-box" style="background: rgba(37, 99, 235, 0.1); color: var(--admin-primary);">💼</div>
+            </div>
+            <div class="kpi-value" id="kpiTotalInvested">$0.00</div>
+            <div class="kpi-trend positive"><span>Histórico de compras</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Proveedores Aliados</span>
+              <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-emerald);">🏢</div>
+            </div>
+            <div class="kpi-value" id="kpiActiveSuppliers">0</div>
+            <div class="kpi-trend neutral"><span>Empresas verificadas</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Lotes Adquiridos</span>
+              <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.1); color: var(--admin-purple);">📦</div>
+            </div>
+            <div class="kpi-value" id="kpiTotalPurchasesCount">0</div>
+            <div class="kpi-trend neutral"><span>Órdenes de abastecimiento</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Retorno Estimado (ROI)</span>
+              <div class="kpi-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--admin-amber);">📈</div>
+            </div>
+            <div class="kpi-value" id="kpiROI">+112.7%</div>
+            <div class="kpi-trend positive"><span>Rendimiento sobre inversión</span></div>
+          </div>
+        </div>
+
+        <!-- Section 1: Directorio de Proveedores -->
+        <div style="margin-bottom: 30px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--admin-text-main);">
+              Directorio de Proveedores Comerciales
+            </h3>
+            <span style="font-size: 0.8rem; color: var(--admin-text-muted);">Empresas fabricantes e importadoras</span>
+          </div>
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Empresa Proveedora</th>
+                    <th>Contacto & Teléfono</th>
+                    <th>Especialidad</th>
+                    <th>Términos de Pago</th>
+                    <th>Total Invertido</th>
+                    <th>Calificación</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="adminSuppliersTableBody">
+                  <!-- Injected by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Historial de Inversiones / Compras de Mercancía -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--admin-text-main);">
+              Historial de Inversiones & Compras de Mercancía
+            </h3>
+            <span style="font-size: 0.8rem; color: var(--admin-text-muted);">Registro de facturas y lotes recibidos</span>
+          </div>
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nº Inversión</th>
+                    <th>Fecha</th>
+                    <th>Proveedor</th>
+                    <th>Mercancía & Lote Adquirido</th>
+                    <th>Unidades</th>
+                    <th>Capital Invertido</th>
+                    <th>Estado de Pago</th>
+                  </tr>
+                </thead>
+                <tbody id="adminPurchasesTableBody">
+                  <!-- Injected by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW 6: PERSONALIZAR MARCA & TIENDA
+           ================================================================== -->
+      <section id="viewPersonalizar" class="admin-view-panel" style="display: none;">
+        
+        <!-- Module Subnavigation: Visual Customizer, Templates Gallery, Blogger-Style Code Editor -->
+        <div class="customizer-subnav-bar">
+          <div class="customizer-subnav-tabs">
+            <button type="button" class="subnav-tab-btn active" id="tabBtnVisual" onclick="admin.switchCustomizerTab('visual')">
+              <span class="tab-icon">🎨</span>
+              <span>Personalizar Marca & Hero</span>
+            </button>
+            <button type="button" class="subnav-tab-btn" id="tabBtnTemplates" onclick="admin.switchCustomizerTab('templates')">
+              <span class="tab-icon">🍱</span>
+              <span>Plantillas de E-Commerce</span>
+              <span class="tab-badge">5 Diseños</span>
+            </button>
+            <button type="button" class="subnav-tab-btn" id="tabBtnCode" onclick="admin.switchCustomizerTab('code')">
+              <span class="tab-icon">💻</span>
+              <span>Subir / Editar Código (Estilo Blogger)</span>
+              <span class="tab-badge dev">&lt;/&gt; Código</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             SUBTAB 1: EDITOR VISUAL (WIX-STYLE PERSONALIZADOR)
+             ================================================================== -->
+        <div id="customizerTabVisual" class="customizer-subtab-panel">
+          <div class="wix-builder-wrapper">
+            <!-- Wix Studio Top Bar -->
+            <div class="wix-top-bar">
+              <div class="wix-bar-left">
+                <div class="wix-badge">
+                  <span class="wix-sparkle">✨</span>
+                  <span class="wix-title">Personalizador Visual</span>
+                </div>
+                <div class="wix-page-select">
+                  <span style="font-size: 0.85rem;">📄</span>
+                  <span style="font-weight: 600; font-size: 0.82rem; color: var(--admin-text-main);">Página:</span>
+                  <span style="font-size: 0.82rem; color: var(--admin-primary); font-weight: 700;">Inicio (Catálogo Oficial)</span>
+                </div>
+              </div>
+
+              <!-- Center: Device Switcher -->
+              <div class="wix-device-switcher">
+                <button type="button" class="device-toggle-btn active" id="btnDeviceDesktop" onclick="admin.setCustomizerDevice('desktop')" title="Vista Escritorio">
+                  <span class="device-icon">💻</span>
+                  <span class="device-label">Escritorio</span>
+                </button>
+                <button type="button" class="device-toggle-btn" id="btnDeviceMobile" onclick="admin.setCustomizerDevice('mobile')" title="Vista Smartphone">
+                  <span class="device-icon">📱</span>
+                  <span class="device-label">Móvil</span>
+                </button>
+              </div>
+
+              <!-- Right: Actions -->
+              <div class="wix-bar-actions">
+                <button type="button" class="btn-wix-secondary" onclick="admin.resetStoreCustomizerDefaults()" title="Restablecer valores predeterminados">
+                  <span>🔄 Defaults</span>
+                </button>
+                <button type="button" class="btn-wix-primary" id="btnSaveWixCustomizer" onclick="admin.handleSaveStoreSettingsFromWix()">
+                  <span>🚀 Guardar & Publicar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Wix Main Layout (Left: Inspector Panel, Right: Visual Canvas) -->
+            <div class="wix-workspace-grid">
+              
+              <!-- LEFT: Wix Inspector Panel -->
+              <aside class="wix-inspector-panel">
+                
+                <!-- Accordion Section 1: Estilo Visual & Paleta -->
+                <div class="wix-accordion-item open" id="accordionEstilo">
+                  <button type="button" class="wix-accordion-header" onclick="admin.toggleWixAccordion('accordionEstilo')">
+                    <div class="accordion-header-title">
+                      <span class="accordion-icon">🎨</span>
+                      <span>Estilo Visual & Colores</span>
+                    </div>
+                    <span class="accordion-arrow">▾</span>
+                  </button>
+                  <div class="wix-accordion-body">
+                    <!-- Color Presets -->
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Paleta de Marca Rápida (1 Clic)</label>
+                      <div class="wix-palette-presets">
+                        <button type="button" class="palette-preset-btn active" data-color="#2563eb" title="Tech Blue" onclick="admin.applyColorPreset('#2563eb', this)">
+                          <span class="preset-swatch" style="background: #2563eb;"></span>
+                          <span class="preset-name">Tech Blue</span>
+                        </button>
+                        <button type="button" class="palette-preset-btn" data-color="#10b981" title="Emerald Eco" onclick="admin.applyColorPreset('#10b981', this)">
+                          <span class="preset-swatch" style="background: #10b981;"></span>
+                          <span class="preset-name">Emerald</span>
+                        </button>
+                        <button type="button" class="palette-preset-btn" data-color="#8b5cf6" title="Cyber Violet" onclick="admin.applyColorPreset('#8b5cf6', this)">
+                          <span class="preset-swatch" style="background: #8b5cf6;"></span>
+                          <span class="preset-name">Violet</span>
+                        </button>
+                        <button type="button" class="palette-preset-btn" data-color="#ea580c" title="Sunset Orange" onclick="admin.applyColorPreset('#ea580c', this)">
+                          <span class="preset-swatch" style="background: #ea580c;"></span>
+                          <span class="preset-name">Orange</span>
+                        </button>
+                        <button type="button" class="palette-preset-btn" data-color="#0f172a" title="Onyx Minimal" onclick="admin.applyColorPreset('#0f172a', this)">
+                          <span class="preset-swatch" style="background: #0f172a;"></span>
+                          <span class="preset-name">Onyx</span>
+                        </button>
+                        <button type="button" class="palette-preset-btn" data-color="#ec4899" title="Rose Chic" onclick="admin.applyColorPreset('#ec4899', this)">
+                          <span class="preset-swatch" style="background: #ec4899;"></span>
+                          <span class="preset-name">Rose</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Custom Hex Picker -->
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Color Personalizado (Hexadecimal)</label>
+                      <div class="wix-color-input-wrap">
+                        <input type="color" id="settingsStoreColorPicker" class="wix-color-picker-input" value="#2563eb">
+                        <input type="text" id="settingsStoreColorText" class="wix-input" value="#2563eb" placeholder="#2563eb">
+                      </div>
+                    </div>
+
+                    <!-- Button Corner Radius Style -->
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Estilo de Botones e Interacciones</label>
+                      <div class="wix-button-styles">
+                        <button type="button" class="wix-style-btn active" data-style="rounded" onclick="admin.setCustomizerButtonStyle('rounded', this)">
+                          <span class="btn-sample rounded"></span>
+                          <span>Redondeado</span>
+                        </button>
+                        <button type="button" class="wix-style-btn" data-style="pill" onclick="admin.setCustomizerButtonStyle('pill', this)">
+                          <span class="btn-sample pill"></span>
+                          <span>Píldora</span>
+                        </button>
+                        <button type="button" class="wix-style-btn" data-style="square" onclick="admin.setCustomizerButtonStyle('square', this)">
+                          <span class="btn-sample square"></span>
+                          <span>Cuadrado</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion Section 2: Identidad & Logotipo -->
+                <div class="wix-accordion-item open" id="accordionIdentidad">
+                  <button type="button" class="wix-accordion-header" onclick="admin.toggleWixAccordion('accordionIdentidad')">
+                    <div class="accordion-header-title">
+                      <span class="accordion-icon">🏷️</span>
+                      <span>Identidad & Logotipo</span>
+                    </div>
+                    <span class="accordion-arrow">▾</span>
+                  </button>
+                  <div class="wix-accordion-body">
+                    <!-- Icon Picker -->
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Icono de la Tienda</label>
+                      <div class="wix-emoji-picker">
+                        <button type="button" class="emoji-chip active" onclick="admin.selectStoreIcon('🛍️', this)">🛍️</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('⚡', this)">⚡</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('🚀', this)">🚀</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('🎧', this)">🎧</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('💎', this)">💎</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('⌚', this)">⌚</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('☕', this)">☕</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('💻', this)">💻</button>
+                        <button type="button" class="emoji-chip" onclick="admin.selectStoreIcon('🛒', this)">🛒</button>
+                      </div>
+                      <input type="hidden" id="settingsStoreLogoIcon" value="🛍️">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Nombre Comercial de la Tienda *</label>
+                      <input type="text" id="settingsStoreName" class="wix-input" required placeholder="Ej: Mi Tienda Oficial">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Eslogan / Subtítulo Comercial</label>
+                      <input type="text" id="settingsStoreTagline" class="wix-input" placeholder="Ej: Tecnología, Accesorios y Estilo de Vida">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion Section 3: Barra Superior de Anuncios -->
+                <div class="wix-accordion-item" id="accordionAnuncios">
+                  <button type="button" class="wix-accordion-header" onclick="admin.toggleWixAccordion('accordionAnuncios')">
+                    <div class="accordion-header-title">
+                      <span class="accordion-icon">📢</span>
+                      <span>Barra Superior de Anuncios</span>
+                    </div>
+                    <span class="accordion-arrow">▾</span>
+                  </button>
+                  <div class="wix-accordion-body">
+                    <div class="wix-switch-wrap">
+                      <label class="wix-switch-label">
+                        <input type="checkbox" id="settingsAnnouncementEnabled" onchange="admin.syncWixPreview()">
+                        <span class="wix-switch-slider"></span>
+                      </label>
+                      <span class="wix-switch-text">Mostrar barra de anuncios en cabecera</span>
+                    </div>
+
+                    <div class="wix-field-group" style="margin-top: 14px;">
+                      <label class="wix-field-label">Mensaje Promocional Destacado</label>
+                      <input type="text" id="settingsAnnouncementText" class="wix-input" placeholder="Ej: Catálogo oficial con existencias garantizadas">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion Section 4: Banner Principal (Hero) -->
+                <div class="wix-accordion-item open" id="accordionHero">
+                  <button type="button" class="wix-accordion-header" onclick="admin.toggleWixAccordion('accordionHero')">
+                    <div class="accordion-header-title">
+                      <span class="accordion-icon">🚀</span>
+                      <span>Banner Principal (Hero - Títulos y Textos)</span>
+                    </div>
+                    <span class="accordion-arrow">▾</span>
+                  </button>
+                  <div class="wix-accordion-body">
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Insignia / Badge Superior</label>
+                      <input type="text" id="settingsHeroTag" class="wix-input" placeholder="Ej: Colección Oficial 2026">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Título Principal Impactante</label>
+                      <input type="text" id="settingsHeroTitle" class="wix-input" placeholder="Ej: Productos Exclusivos para un Estilo de Vida Moderno">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Descripción Persuasiva</label>
+                      <textarea id="settingsHeroDesc" class="wix-textarea" rows="3" placeholder="Descripción breve de los beneficios de comprar en la tienda"></textarea>
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Texto del Botón Principal (CTA)</label>
+                      <input type="text" id="settingsHeroCtaText" class="wix-input" placeholder="Ej: Explorar Catálogo">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion Section 5: Contacto & Despacho -->
+                <div class="wix-accordion-item" id="accordionContacto">
+                  <button type="button" class="wix-accordion-header" onclick="admin.toggleWixAccordion('accordionContacto')">
+                    <div class="accordion-header-title">
+                      <span class="accordion-icon">📞</span>
+                      <span>Contacto & Despacho</span>
+                    </div>
+                    <span class="accordion-arrow">▾</span>
+                  </button>
+                  <div class="wix-accordion-body">
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Teléfono de Contacto (WhatsApp Directo)</label>
+                      <input type="text" id="settingsStorePhone" class="wix-input" placeholder="+58 414 123 4567">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Correo Oficial de Soporte</label>
+                      <input type="email" id="settingsStoreEmail" class="wix-input" placeholder="contacto@mitienda.com">
+                    </div>
+
+                    <div class="wix-field-group">
+                      <label class="wix-field-label">Dirección Física / Despachos</label>
+                      <input type="text" id="settingsStoreAddress" class="wix-input" placeholder="Av. Principal Comercial, Local 4">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Big prominent Save Button at bottom of inspector -->
+                <div class="wix-panel-footer">
+                  <button type="button" class="btn-save-customizer-full" id="btnSaveWixCustomizerBottom" onclick="admin.handleSaveStoreSettingsFromWix()">
+                    <span>💾 Guardar Cambios de la Tienda</span>
+                  </button>
+                </div>
+
+              </aside>
+
+              <!-- RIGHT: Wix Live Visual Canvas -->
+              <main class="wix-canvas-panel">
+                <!-- Browser Mockup Chrome -->
+                <div class="wix-browser-chrome">
+                  <div class="wix-window-dots">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                  </div>
+
+                  <div class="wix-address-bar">
+                    <span class="ssl-lock">🔒</span>
+                    <span class="address-url" id="wixCanvasUrl">https://mitienda.com/catalogo</span>
+                    <span class="live-pill">🟢 En Vivo</span>
+                  </div>
+
+                  <div class="wix-chrome-actions">
+                    <button type="button" class="btn-refresh-frame" onclick="admin.refreshWixIframe()" title="Recargar vista">🔄</button>
+                    <a href="index.html" target="_blank" class="btn-open-external" title="Abrir tienda en pestaña nueva">
+                      <span>Ver Tienda</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Viewport Frame Container (Switches between desktop full width and mobile 390px phone container) -->
+                <div class="wix-viewport-container desktop-mode" id="wixViewportContainer">
+                  <div class="mobile-phone-speaker" id="mobileSpeaker" style="display: none;"></div>
+                  <iframe 
+                    id="wixStorePreviewIframe" 
+                    src="index.html" 
+                    class="wix-preview-frame" 
+                    title="Vista Previa en Vivo de la Tienda"
+                  ></iframe>
+                </div>
+              </main>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             SUBTAB 2: GALERÍA DE PLANTILLAS DE E-COMMERCE
+             ================================================================== -->
+        <div id="customizerTabTemplates" class="customizer-subtab-panel" style="display: none;">
+          <div class="templates-view-header">
+            <div>
+              <h2 class="templates-view-title">Galería de Plantillas de E-Commerce</h2>
+              <p class="templates-view-desc">Selecciona un diseño predeterminado para tu tienda. Al aplicar una plantilla se sincronizan automáticamente la paleta de colores, tipografías, banners y estilos.</p>
+            </div>
+            <div class="templates-active-pill">
+              <span>Plantilla activa:</span>
+              <strong id="activeTemplateBadgeName">Tech Vanguard</strong>
+            </div>
+          </div>
+
+          <div class="templates-grid" id="templatesGridContainer">
+            <!-- Injected by JavaScript -->
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             SUBTAB 3: EDITOR Y SUBIDA DE CÓDIGO (ESTILO BLOGGER)
+             ================================================================== -->
+        <div id="customizerTabCode" class="customizer-subtab-panel" style="display: none;">
+          <div class="code-editor-header">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <h2 class="code-editor-title">Editor & Subida de Plantilla HTML</h2>
+                <span class="badge-blogger-style">Estilo Blogger / Liquid</span>
+              </div>
+              <p class="code-editor-desc">
+                Sube tu propio archivo HTML/CSS personalizado o edita el código en vivo. El panel visual mantendrá la sincronización con los textos, colores y logotipo.
+              </p>
+            </div>
+
+            <div class="code-actions-group">
+              <input type="file" id="templateFileInput" accept=".html,.htm,.txt" style="display: none;" onchange="admin.handleUploadTemplateFile(event)">
+              <button type="button" class="btn-code-action" onclick="document.getElementById('templateFileInput').click()" title="Subir archivo .html">
+                <span>📁 Subir Archivo .html</span>
+              </button>
+              <button type="button" class="btn-code-action" onclick="admin.downloadTemplateCode()" title="Descargar código actual">
+                <span>⬇ Descargar</span>
+              </button>
+              <button type="button" class="btn-code-action" onclick="admin.resetTemplateCodeToDefault()" title="Restablecer al código original">
+                <span>🔄 Restaurar Original</span>
+              </button>
+              <button type="button" class="btn-code-compile" onclick="admin.saveAndCompileTemplateCode()">
+                <span>💾 Guardar & Compilar Plantilla</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Developer Guide: How to code templates to sync with customizer -->
+          <div class="blogger-guide-card">
+            <div class="blogger-guide-header" onclick="admin.toggleBloggerGuide()">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.25rem;">📖</span>
+                <div>
+                  <h3 style="font-family: var(--font-display); font-size: 0.98rem; font-weight: 800; color: var(--admin-text-main);">
+                    Guía de Integración para Desarrolladores: ¿Cómo codear tu plantilla para sincronizarla?
+                  </h3>
+                  <p style="font-size: 0.8rem; color: var(--admin-text-muted);">
+                    Añade estas etiquetas dinámicas o identificadores (IDs) en tu HTML para que el dueño de la tienda pueda editar textos, colores e imágenes desde el panel visual sin tocar código.
+                  </p>
+                </div>
+              </div>
+              <span id="guideArrow" style="font-size: 0.9rem; color: var(--admin-text-muted);">▾</span>
+            </div>
+
+            <div class="blogger-guide-body" id="bloggerGuideBody">
+              <div class="guide-grid">
+                <div class="guide-col">
+                  <div class="guide-col-title">🏷️ Variables Dinámicas (Tags Blogger)</div>
+                  <div class="tag-row"><code>{{store_name}}</code> <span>Nombre comercial de la tienda</span></div>
+                  <div class="tag-row"><code>{{store_tagline}}</code> <span>Eslogan / Subtítulo</span></div>
+                  <div class="tag-row"><code>{{store_logo}}</code> <span>Emoji o icono del logo</span></div>
+                  <div class="tag-row"><code>{{primary_color}}</code> <span>Color corporativo hex (ej: #2563eb)</span></div>
+                  <div class="tag-row"><code>{{announcement_text}}</code> <span>Mensaje de la barra superior</span></div>
+                  <div class="tag-row"><code>{{hero_tag}}</code> <span>Insignia flotante superior</span></div>
+                  <div class="tag-row"><code>{{hero_title}}</code> <span>Título principal del Hero</span></div>
+                  <div class="tag-row"><code>{{hero_desc}}</code> <span>Descripción o párrafo del Hero</span></div>
+                  <div class="tag-row"><code>{{hero_cta}}</code> <span>Texto del botón principal</span></div>
+                  <div class="tag-row"><code>{{contact_phone}}</code> <span>Teléfono WhatsApp</span></div>
+                  <div class="tag-row"><code>{{contact_email}}</code> <span>Correo oficial</span></div>
+                  <div class="tag-row"><code>{{contact_address}}</code> <span>Dirección física</span></div>
+                </div>
+
+                <div class="guide-col">
+                  <div class="guide-col-title">🎯 Identificadores HTML (IDs Recomendados)</div>
+                  <div class="tag-row"><code>id="storeBrandName"</code> <span>Contenedor del nombre de la marca</span></div>
+                  <div class="tag-row"><code>id="storeBrandIcon"</code> <span>Contenedor del icono/logo</span></div>
+                  <div class="tag-row"><code>id="heroTitle"</code> <span>Título principal del Hero</span></div>
+                  <div class="tag-row"><code>id="heroTagText"</code> <span>Texto de la insignia</span></div>
+                  <div class="tag-row"><code>id="heroDesc"</code> <span>Párrafo descriptivo del Hero</span></div>
+                  <div class="tag-row"><code>id="heroPrimaryCta"</code> <span>Botón de llamada a la acción</span></div>
+                  <div class="tag-row"><code>id="topBarText"</code> <span>Barra superior de avisos</span></div>
+                  <div class="tag-row"><code>var(--primary)</code> <span>Variable CSS del color de marca</span></div>
+                  <div class="tag-row"><code>var(--radius-md)</code> <span>Variable CSS del radio de botones</span></div>
+                </div>
+              </div>
+
+              <!-- Quick Insert Buttons Bar -->
+              <div class="quick-tags-bar">
+                <span class="quick-tags-label">Insertar Tag Rápido en Código:</span>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{store_name}}')">{{store_name}}</button>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{hero_title}}')">{{hero_title}}</button>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{hero_desc}}')">{{hero_desc}}</button>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{hero_cta}}')">{{hero_cta}}</button>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{primary_color}}')">{{primary_color}}</button>
+                <button type="button" class="btn-insert-tag" onclick="admin.insertTagIntoCode('{{contact_phone}}')">{{contact_phone}}</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Editor Shell -->
+          <div class="code-editor-shell">
+            <div class="code-editor-top">
+              <div class="code-file-tab">
+                <span class="file-icon">📄</span>
+                <span class="file-name">template.html</span>
+                <span class="file-tag">HTML5 + CSS + Dynamic Tags</span>
+              </div>
+              <div class="code-editor-info" id="codeEditorStatus">
+                <span>Listo para editar o compilar</span>
+              </div>
+            </div>
+
+            <textarea 
+              id="templateCodeEditor" 
+              class="code-textarea" 
+              placeholder="<!-- Pega o escribe aquí el código HTML de tu plantilla personalizada -->" 
+              spellcheck="false"
+            ></textarea>
+
+            <div class="code-editor-bottom">
+              <span style="font-size: 0.8rem; color: var(--admin-text-muted);">
+                💡 Tip: Los cambios compilados se guardan localmente y se reflejan de inmediato en la tienda pública y en el personalizador.
+              </span>
+              <button type="button" class="btn-code-compile" onclick="admin.saveAndCompileTemplateCode()">
+                <span>💾 Guardar & Compilar Plantilla</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================================================================
+       MODAL: CREAR / EDITAR PRODUCTO (CON COSTO & PROVEEDOR)
+       ================================================================== -->
+  <div class="modal-overlay" id="productModal" style="display: none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closeProdModalBtn" type="button">✕</button>
+      <div style="margin-bottom: 20px;">
+        <h2 id="prodModalTitle" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; color: var(--admin-text-main);">
+          Nuevo Producto en Catálogo
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--admin-text-muted);">
+          Define el costo de adquisición al proveedor y el precio de venta para calcular la ganancia.
+        </p>
+      </div>
+
+      <form id="productForm">
+        <input type="hidden" id="editProductId">
+
+        <div class="form-group">
+          <label class="form-label">Nombre del Producto *</label>
+          <input type="text" id="prodFormName" class="form-input" required placeholder="Ej: Auriculares Inalámbricos Pro">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Categoría *</label>
+            <select id="prodFormCategory" class="form-input">
+              <option value="audio">Audio & Sonido</option>
+              <option value="wearables">Smartwatches</option>
+              <option value="oficina">Setup & Oficina</option>
+              <option value="accesorios">Bolsos & Estilo</option>
+              <option value="hogar">Hogar & Confort</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Código SKU *</label>
+            <input type="text" id="prodFormSku" class="form-input" required placeholder="TECH-SKU-01" style="font-family: monospace;">
+          </div>
+        </div>
+
+        <!-- Cost and Selling Price Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Costo Adquisición al Proveedor ($) *</label>
+            <input type="number" id="prodFormCostPrice" step="0.01" min="0" class="form-input" required placeholder="38.50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Precio de Venta al Público ($) *</label>
+            <input type="number" id="prodFormPrice" step="0.01" min="0" class="form-input" required placeholder="89.99">
+          </div>
+        </div>
+
+        <!-- Live Profitability Indicator in Product Modal -->
+        <div id="modalProfitabilityBox" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
+          <span style="color: #166534; font-weight: 700;">💰 Ganancia por unidad: <span id="modalProfitUnit" style="font-family: var(--font-display); font-size: 1.1rem;">+$51.49</span></span>
+          <span style="color: #15803d; font-weight: 700;">Margen: <span id="modalProfitMargin">57.2%</span></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Proveedor Asignado *</label>
+            <select id="prodFormSupplier" class="form-input">
+              <!-- Injected dynamically from suppliers list -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Existencias en Almacén *</label>
+            <input type="number" id="prodFormStock" min="0" class="form-input" required placeholder="50">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Marca Fabricante *</label>
+            <input type="text" id="prodFormBrand" class="form-input" required placeholder="AuraSound, OptiGrip, etc.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ruta o URL de Imagen *</label>
+            <input type="text" id="prodFormImage" class="form-input" required placeholder="img/catalog/tech_auriculares.jpg">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descripción Comercial</label>
+          <textarea id="prodFormDesc" class="form-input" rows="2" placeholder="Detalles de calidad, especificaciones y características..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-admin-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px;">
+          <span>Guardar Producto</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       MODAL: REGISTRAR COMPRA / INVERSIÓN EN MERCANCÍA
+       ================================================================== -->
+  <div class="modal-overlay" id="purchaseModal" style="display: none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closePurchaseModalBtn" type="button">✕</button>
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; color: var(--admin-text-main);">
+          Registrar Inversión / Entrada de Mercancía
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--admin-text-muted);">
+          Registra un lote de mercancía comprado a un proveedor y su costo para actualizar el capital invertido.
+        </p>
+      </div>
+
+      <form id="purchaseForm">
+        <div class="form-group">
+          <label class="form-label">Proveedor Comercial *</label>
+          <select id="purchaseFormSupplier" class="form-input" required>
+            <!-- Injected by JavaScript -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción de la Mercancía o Lote *</label>
+          <input type="text" id="purchaseFormDesc" class="form-input" required placeholder="Ej: 50x Auriculares ANC Pro + 40x Altavoces 360°">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Capital Invertido ($ USD) *</label>
+            <input type="number" id="purchaseFormAmount" step="0.01" min="0" class="form-input" required placeholder="1850.00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Unidades Adquiridas *</label>
+            <input type="number" id="purchaseFormUnits" min="1" class="form-input" required placeholder="50">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">N° Factura / Comprobante</label>
+            <input type="text" id="purchaseFormReceipt" class="form-input" placeholder="FAC-2026-901">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estado del Pago</label>
+            <select id="purchaseFormStatus" class="form-input">
+              <option value="Recibido & Pagado">Recibido & Pagado</option>
+              <option value="Crédito 15 días">Crédito 15 días</option>
+              <option value="Crédito 30 días">Crédito 30 días</option>
+              <option value="En Tránsito">En Tránsito</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-admin-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px;">
+          <span>Guardar Inversión & Actualizar Métricas</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       MODAL: NUEVO PROVEEDOR
+       ================================================================== -->
+  <div class="modal-overlay" id="supplierModal" style="display: none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closeSupplierModalBtn" type="button">✕</button>
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; color: var(--admin-text-main);">
+          Registrar Nuevo Proveedor
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--admin-text-muted);">
+          Añade una empresa fabricante o distribuidora para asociar productos y registrar compras.
+        </p>
+      </div>
+
+      <form id="supplierForm">
+        <div class="form-group">
+          <label class="form-label">Nombre de la Empresa Proveedora *</label>
+          <input type="text" id="supplierFormName" class="form-input" required placeholder="Ej: Shenzhen Global Tech Co.">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Persona de Contacto *</label>
+            <input type="text" id="supplierFormContact" class="form-input" required placeholder="Ej: Lin Wei / Gerente Comercial">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoría de Suministros *</label>
+            <input type="text" id="supplierFormCategory" class="form-input" required placeholder="Ej: Audio, Gadgets, Periféricos">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Teléfono / WhatsApp *</label>
+            <input type="text" id="supplierFormPhone" class="form-input" required placeholder="+58 414 123 4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" id="supplierFormEmail" class="form-input" placeholder="ventas@proveedor.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Condiciones / Términos de Pago</label>
+          <input type="text" id="supplierFormTerms" class="form-input" placeholder="Ej: Transferencia / Crédito 15 días">
+        </div>
+        <button type="submit" class="btn-admin-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px;">
+          <span>Guardar Proveedor</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL DE SEGURIDAD / ACCESO RESTRINGIDO AL PANEL (ADMIN LOGIN GATE)
+       ========================================================================== -->
+  <div class="modal-overlay" id="adminLoginGateModal" style="display: none; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); z-index: 99999;">
+    <div class="modal-card" style="max-width: 440px; text-align: center; border: 1px solid var(--admin-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+      <div style="font-size: 3rem; margin-bottom: 8px;">🔒</div>
+      <h2 style="font-family: var(--font-display); font-size: 1.45rem; font-weight: 800; color: var(--admin-text-main); margin-bottom: 6px;">
+        Acceso Administrativo Restringido
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--admin-text-muted); margin-bottom: 20px; line-height: 1.5;">
+        Este panel contiene las métricas financieras, compras a proveedores e inventario confidencial de la tienda. Debes autenticarte como dueño para ingresar.
+      </p>
+
+      <div id="adminGateAlert" style="display: none; padding: 10px; margin-bottom: 14px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 8px; font-size: 0.82rem; font-weight: 600;">
+        ⚠️ Credenciales incorrectas. Solo administradores autorizados.
+      </div>
+
+      <form id="adminGateForm" onsubmit="admin.handleGateLogin(event)" style="text-align: left;">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; color: var(--admin-text-main);">Correo de Administrador</label>
+          <input type="email" id="gateEmail" class="form-input" required value="admin@tienda.com" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 8px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label class="form-label" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; color: var(--admin-text-main);">Contraseña</label>
+          <input type="password" id="gatePassword" class="form-input" required value="admin123" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 8px;">
+        </div>
+        <button type="submit" class="btn-admin-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 800; border-radius: 8px; cursor: pointer;">
+          <span>Ingresar al Panel de Control</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--admin-border);">
+        <a href="index.html" style="font-size: 0.84rem; color: var(--admin-primary); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+          <span>← Volver a la Tienda Pública como Comprador</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="adminToastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

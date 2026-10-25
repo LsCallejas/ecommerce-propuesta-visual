@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Tienda Online — E-Commerce Oficial</title>
+<meta name="description" content="E-Commerce oficial con catálogo en tiempo real de tecnología, accesorios y estilo de vida con inventario garantizado.">
+
+<!-- Google Fonts: Inter, Outfit, Playfair Display (Ejecutivo), Space Grotesk (Moderno/Tech), Plus Jakarta Sans (Nórdico), Syne (Moda) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<!-- Main Stylesheet -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Top Announcement Bar -->
+<div class="top-bar">
+<div class="top-bar-content">
+<span class="badge-pulse">Tienda Oficial Online</span>
+<span id="topBarText">Catálogo de tecnología, accesorios y estilo de vida con entregas rápidas a todo el país</span>
+</div>
+<!-- Visible ONLY to Store Owner (Admin) -->
+<div id="topBarAdminWrap" class="top-bar-admin-wrap" style="display: none;">
+<span class="admin-session-indicator">👑 Modo Dueño (Daniel Campos)</span>
+<a href="admin.html" class="top-bar-admin-btn" title="Ir al Panel de Control de la Tienda">
+<span>⚡ Ir al Panel de Control</span>
+<span>→</span>
+</a>
+<button class="top-bar-logout-btn" onclick="app.logout()" title="Cerrar sesión de Administrador">
+<span>Cerrar Sesión</span>
+</button>
+</div>
+</div>
+
+<!-- Header / Navigation Bar -->
+<header class="main-header">
+<div class="nav-container">
+
+<!-- Brand Logo -->
+<a href="index.html" class="brand-wrap" id="brandLink">
+<div class="brand-icon" id="storeBrandIcon">🛍️</div>
+<div class="brand-title">
+<span id="storeBrandName">Mi Tienda Oficial</span>
+<span class="brand-subtitle" id="storeBrandTagline">E-Commerce Oficial</span>
+</div>
+</a>
+
+<!-- Search Bar -->
+<div class="search-bar-wrap">
+<span class="search-icon">🔍</span>
+<input 
+type="text" 
+id="searchInput" 
+class="search-input" 
+placeholder="Buscar auriculares, smartwatch, teclado, mochila..." 
+autocomplete="off"
+>
+</div>
+
+<!-- Header Actions -->
+<div class="nav-actions">
+<!-- Cart Button -->
+<button id="openCartBtn" class="btn-icon-badge" title="Ver Carrito de Compras">
+<span>🛒</span>
+<span id="cartCountBadge" class="badge-count">0</span>
+</button>
+
+<!-- User Auth & Session Controller (Populated dynamically by app.js) -->
+<div id="userAuthContainer" class="user-auth-wrap">
+<!-- Injected by app.renderUserAuthStatus() -->
+</div>
+</div>
+
+</div>
+</header>
+
+<!-- Hero Section -->
+<section id="heroSection" class="hero-section">
+<div class="hero-bg-glow"></div>
+<div class="hero-bg-glow-left"></div>
+
+<div class="hero-inner">
+<div id="heroTag" class="hero-tag">
+<span>🚀</span>
+<span id="heroTagText">Colección Oficial 2026</span>
+</div>
+
+<h1 id="heroTitle" class="hero-title">
+Productos Exclusivos para un <br>
+<span class="gradient-text">Estilo de Vida Moderno</span>
+</h1>
+
+<p id="heroDesc" class="hero-desc">
+Descubre nuestra selección de tecnología, accesorios de alta gama y artículos esenciales diseñados para elevar tu día a día con disponibilidad en tiempo real.
+</p>
+
+<div class="hero-ctas">
+<a href="#catalogo" class="btn-hero-primary" id="heroPrimaryCta">
+<span>Explorar Catálogo</span>
+<span>↓</span>
+</a>
+<a href="admin.html" class="btn-hero-secondary">
+<span>Panel de Administración</span>
+<span>⚡</span>
+</a>
+</div>
+
+<!-- Stats Bar -->
+<div class="hero-stats-row" id="heroStatsRow">
+<div class="hero-stat-item">
+<span class="hero-stat-value">100%</span>
+<span class="hero-stat-label">Stock Garantizado</span>
+</div>
+<div class="hero-stat-item">
+<span class="hero-stat-value">Oficial</span>
+<span class="hero-stat-label">Garantía Directa</span>
+</div>
+<div class="hero-stat-item">
+<span class="hero-stat-value">24h - 48h</span>
+<span class="hero-stat-label">Despachos Asegurados</span>
+</div>
+<div class="hero-stat-item">
+<span class="hero-stat-value">Seguro</span>
+<span class="hero-stat-label">Pagos y Facturación</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Catalog Section -->
+<section class="section-wrap" id="catalogo">
+<div class="section-head">
+<div>
+<h2 class="section-title" id="catalogTitle">Catálogo de Productos</h2>
+<p class="section-subtitle" id="catalogSubtitle">Filtrado por disponibilidad, especificaciones y precios actualizados.</p>
+</div>
+<div id="activeFilterBadge" style="display: none;" class="badge-status active">
+<span>Filtro activo</span>
+</div>
+</div>
+
+<!-- Category Filter Bar -->
+<div class="categories-filter-bar" id="categoryFilterBar">
+<!-- Injected by JavaScript -->
+</div>
+
+<!-- Products Grid -->
+<div class="products-grid" id="productsGrid">
+<!-- Injected by JavaScript -->
+</div>
+
+<!-- Empty Results State -->
+<div id="emptyCatalogState" class="cart-empty-state" style="display: none;">
+<div class="cart-empty-icon">📦</div>
+<h3 style="color: var(--slate-800); font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">No se encontraron productos</h3>
+<p>Intenta con otro término de búsqueda o selecciona otra categoría.</p>
+</div>
+</section>
+
+<!-- Slide-out Cart Drawer -->
+<div class="cart-drawer-overlay" id="cartOverlay">
+<aside class="cart-drawer">
+
+<!-- Drawer Header -->
+<div class="cart-drawer-header">
+<h3 class="cart-drawer-title">
+<span>🛒 Tu Carrito</span>
+<span id="cartDrawerCount" class="badge-status active" style="font-size: 0.75rem;">0 items</span>
+</h3>
+<button id="closeCartBtn" class="btn-close-drawer" title="Cerrar Carrito">✕</button>
+</div>
+
+<!-- Free Shipping Meter -->
+<div class="shipping-meter-wrap">
+<div class="shipping-meter-text">
+<span id="shippingMeterLabel">Envío Gratis desde $100.00</span>
+<span id="shippingMeterDiff" style="color: var(--primary);">$100.00 restante</span>
+</div>
+<div class="shipping-progress-bg">
+<div class="shipping-progress-bar" id="shippingProgressBar" style="width: 0%;"></div>
+</div>
+</div>
+
+<!-- Cart Items List Container -->
+<div class="cart-items-list" id="cartItemsList">
+<!-- Injected by JavaScript -->
+</div>
+
+<!-- Drawer Footer -->
+<div class="cart-drawer-footer" id="cartDrawerFooter">
+<div class="cart-summary-row">
+<span>Subtotal</span>
+<strong id="cartSubtotal" style="font-family: var(--font-display); font-size: 1.15rem;">$0.00</strong>
+</div>
+<p style="font-size: 0.75rem; color: var(--slate-500); margin-bottom: 12px;">
+Impuestos y cálculo de envío detallados en el siguiente paso.
+</p>
+<button id="proceedToCheckoutBtn" class="btn-checkout-now">
+<span>Continuar con el Pedido</span>
+<span>→</span>
+</button>
+</div>
+
+</aside>
+</div>
+
+<!-- Modal Checkout / Finalizar Pedido -->
+<div class="modal-overlay" id="checkoutModal">
+<div class="modal-card">
+<button class="modal-close-btn" id="closeCheckoutBtn">✕</button>
+<div class="checkout-modal-body">
+
+<h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; margin-bottom: 6px;">
+Finalizar Compra
+</h2>
+<p style="font-size: 0.85rem; color: var(--slate-500); margin-bottom: 18px;">
+Completa tus datos para coordinar el despacho inmediato.
+</p>
+
+<!-- Checkout Summary Box -->
+<div class="checkout-summary-box">
+<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+<span style="font-size: 0.85rem; color: var(--slate-600);">Artículos a comprar:</span>
+<strong id="modalSummaryCount">0 items</strong>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 1.1rem; border-top: 1px solid var(--slate-200); padding-top: 8px;">
+<span style="font-weight: 700;">Total a Pagar:</span>
+<span class="gradient-text" style="font-weight: 900; font-family: var(--font-display);" id="modalSummaryTotal">$0.00</span>
+</div>
+</div>
+
+<form id="checkoutForm">
+<div class="form-group">
+<label class="form-label">Nombre Completo / Empresa *</label>
+<input type="text" id="custName" class="form-input" required placeholder="Ej: Juan Pérez">
+</div>
+
+<div class="form-group">
+<label class="form-label">Correo Electrónico *</label>
+<input type="email" id="custEmail" class="form-input" required placeholder="juan.perez@email.com">
+</div>
+
+<div class="form-group">
+<label class="form-label">Teléfono / WhatsApp *</label>
+<input type="tel" id="custPhone" class="form-input" required placeholder="+58 414 123 4567">
+</div>
+
+<div class="form-group">
+<label class="form-label">Dirección de Entrega / Despacho *</label>
+<input type="text" id="custAddress" class="form-input" required placeholder="Urb, Calle, Edificio, Ciudad...">
+</div>
+
+<div class="form-group">
+<label class="form-label">Método de Pago Preferido</label>
+<div class="payment-methods-grid">
+<div class="payment-method-card selected" data-method="Pago Móvil">
+<div style="font-size: 1.3rem;">📱</div>
+<div style="font-weight: 700; font-size: 0.85rem; margin-top: 4px;">Pago Móvil</div>
+</div>
+<div class="payment-method-card" data-method="Zelle">
+<div style="font-size: 1.3rem;">💵</div>
+<div style="font-weight: 700; font-size: 0.85rem; margin-top: 4px;">Zelle</div>
+</div>
+<div class="payment-method-card" data-method="Transferencia Bancaria">
+<div style="font-size: 1.3rem;">🏦</div>
+<div style="font-weight: 700; font-size: 0.85rem; margin-top: 4px;">Transferencia</div>
+</div>
+</div>
+</div>
+
+<button type="submit" class="btn-checkout-now" style="margin-top: 10px;">
+<span>Confirmar y Enviar Pedido</span>
+<span>✓</span>
+</button>
+</form>
+
+</div>
+</div>
+</div>
+
+<!-- Modal Quick View Producto -->
+<div class="modal-overlay" id="quickViewModal">
+<div class="modal-card" style="max-width: 680px;">
+<button class="modal-close-btn" id="closeQuickViewBtn">✕</button>
+<div class="quickview-body" id="quickViewContent">
+<!-- Injected by JavaScript -->
+</div>
+</div>
+</div>
+
+<!-- Modal Orden Exitosa -->
+<div class="modal-overlay" id="orderSuccessModal">
+<div class="modal-card" style="max-width: 480px; text-align: center;">
+<div style="font-size: 3.5rem; margin-bottom: 10px;">🎉</div>
+<h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; margin-bottom: 6px;">
+¡Pedido Registrado con Éxito!
+</h2>
+<p style="font-size: 0.9rem; color: var(--slate-600); margin-bottom: 14px;">
+Tu orden <strong id="successOrderId" style="color: var(--primary);">ORD-XXXX</strong> ha sido ingresada y sincronizada directamente con el Panel Administrativo.
+</p>
+<div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 12px; margin-bottom: 20px; font-size: 0.82rem; color: var(--slate-600); text-align: left;">
+💡 <strong>Siguiente paso:</strong> Un asesor de ventas se pondrá en contacto contigo por WhatsApp para confirmar los detalles de despacho y facturación.
+</div>
+<div style="display: flex; gap: 10px; justify-content: center;">
+<button class="btn-hero-primary" id="closeSuccessBtn" style="padding: 10px 20px;">
+<span>Seguir Comprando</span>
+</button>
+<a href="admin.html" class="btn-hero-secondary" style="padding: 10px 20px;">
+<span>Ver en Admin ⚡</span>
+</a>
+</div>
+</div>
+</div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Main Footer -->
+<footer class="main-footer">
+<div class="footer-inner">
+<div class="footer-col">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+<div style="font-size: 1.5rem;" id="footerLogoIcon">🛍️</div>
+<span style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: white;" id="footerStoreName">Mi Tienda Oficial</span>
+</div>
+<p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.6; max-width: 340px;" id="footerDesc">
+Plataforma de comercio electrónico con catálogo en tiempo real, gestión de inventario y compras 100% seguras.
+</p>
+</div>
+
+<div class="footer-col">
+<h4>Categorías Principales</h4>
+<ul>
+<li><a href="javascript:void(0)" onclick="app.setCategoryFilter('audio')">Audio & Sonido</a></li>
+<li><a href="javascript:void(0)" onclick="app.setCategoryFilter('wearables')">Smartwatches</a></li>
+<li><a href="javascript:void(0)" onclick="app.setCategoryFilter('oficina')">Setup & Oficina</a></li>
+<li><a href="javascript:void(0)" onclick="app.setCategoryFilter('accesorios')">Bolsos & Estilo</a></li>
+<li><a href="javascript:void(0)" onclick="app.setCategoryFilter('hogar')">Hogar & Confort</a></li>
+</ul>
+</div>
+
+<div class="footer-col">
+<h4>Atención & Seguridad</h4>
+<ul>
+<li><a href="javascript:void(0)">Envíos Nacionales Asegurados</a></li>
+<li><a href="javascript:void(0)">Garantía de Fábrica Oficial</a></li>
+<li><a href="javascript:void(0)" id="footerPhoneLink">Soporte WhatsApp</a></li>
+<li><a href="javascript:void(0)">Facturación Fiscal y Pagos Seguros</a></li>
+</ul>
+</div>
+
+<div class="footer-col" id="footerAdminCol">
+<h4>Portal del Negocio</h4>
+<p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 12px;">
+Espacio reservado para el dueño de la tienda y colaboradores.
+</p>
+<div id="footerAdminActionWrap">
+<!-- Injected dynamically: either login button or direct admin access -->
+</div>
+</div>
+</div>
+
+<div class="footer-bottom">
+<div>
+© 2026 <span id="footerCopyName">Mi Tienda Oficial</span>. Todos los derechos reservados.
+</div>
+<div>
+Conexión en Vivo con Base de Datos Local
+</div>
+</div>
+</footer>
+
+<!-- ==========================================================================
+     MODAL DE INICIO DE SESIÓN / IDENTIFICACIÓN DE ROLES
+     ========================================================================== -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-card login-modal-card" style="max-width: 440px;">
+    <button class="modal-close-btn" id="closeLoginModalBtn" onclick="app.closeLoginModal()">✕</button>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="font-size: 2.2rem; margin-bottom: 6px;">🔐</div>
+      <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--slate-900); margin-bottom: 4px;">
+        Acceso a la Plataforma
+      </h2>
+      <p style="font-size: 0.82rem; color: var(--slate-500);">
+        Inicia sesión como dueño de la tienda o como cliente comprador.
+      </p>
+    </div>
+
+    <!-- Quick Role Switch Pills -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <button type="button" class="btn-role-tab active" id="btnRoleTabAdmin" onclick="app.setLoginFormRole('admin')" style="flex: 1; padding: 10px 8px; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+        👑 Dueño / Admin
+      </button>
+      <button type="button" class="btn-role-tab" id="btnRoleTabCliente" onclick="app.setLoginFormRole('cliente')" style="flex: 1; padding: 10px 8px; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+        🛍️ Cliente Comprador
+      </button>
+    </div>
+
+    <form id="loginForm" onsubmit="app.handleLoginSubmit(event)">
+      <div id="loginAlertError" class="login-alert-error" style="display: none; margin-bottom: 14px; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600;">
+        <span>⚠️</span>
+        <span id="loginAlertErrorText">Credenciales inválidas</span>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+        <label class="form-label" for="loginEmail" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--slate-700);">Correo Electrónico</label>
+        <input type="email" id="loginEmail" class="form-input" required value="admin@tienda.com" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--slate-300); border-radius: var(--radius-md); font-size: 0.88rem;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 18px; text-align: left;">
+        <label class="form-label" for="loginPassword" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--slate-700);">Contraseña</label>
+        <input type="password" id="loginPassword" class="form-input" required value="admin123" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--slate-300); border-radius: var(--radius-md); font-size: 0.88rem;">
+      </div>
+
+      <button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 800; font-size: 0.95rem; border: none; border-radius: var(--radius-md); cursor: pointer;">
+        <span id="loginSubmitBtnText">Ingresar como Dueño</span>
+        <span>→</span>
+      </button>
+    </form>
+
+    <div style="margin-top: 16px; padding: 12px; background: var(--slate-50); border: 1px dashed var(--slate-300); border-radius: var(--radius-md); font-size: 0.78rem; color: var(--slate-600); line-height: 1.5; text-align: left;">
+      💡 <strong>Demostración de Roles:</strong><br>
+      • <strong>Dueño:</strong> Acceso al panel administrativo, finanzas y control de inventario.<br>
+      • <strong>Cliente:</strong> Los botones de administración <strong>desaparecen por completo</strong> para una experiencia de compra 100% limpia.
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
