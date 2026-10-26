@@ -22,7 +22,7 @@ EXPOSE 80
 
 # Healthcheck para verificar disponibilidad del servicio web
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:80/index.html || exit 1
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:80/index.html || exit 1
 
 # Comando por defecto para iniciar Nginx en primer plano
 CMD ["nginx", "-g", "daemon off;"]

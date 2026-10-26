@@ -7,8 +7,6 @@
 #   2. db:  Motor de Base de Datos Relacional PostgreSQL 16 con Esquema ACID
 # ==============================================================================
 
-version: '3.8'
-
 services:
   # ----------------------------------------------------------------------------
   # Servicio 1: Base de Datos Relacional (PostgreSQL 16 Oficial)
