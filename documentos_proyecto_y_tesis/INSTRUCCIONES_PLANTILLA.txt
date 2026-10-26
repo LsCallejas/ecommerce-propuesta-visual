@@ -1,0 +1,79 @@
+# SISTEMA E-COMMERCE: PROSAFETY EPP (CLIENTE + PANEL ADMINISTRATIVO)
+
+¡Hola! Este proyecto cuenta con dos partes completamente funcionales y sincronizadas en tiempo real:
+1. **Tienda Pública (Lado del Cliente):** `index.html`
+2. **Panel de Control Administrativo (Lado de la Empresa):** `admin.html`
+
+No depende de servidores complejos ni instalaciones pesadas. Funciona directamente en cualquier navegador web (Chrome, Edge, Firefox, Safari).
+
+---
+
+## 🚀 ¿CÓMO ABRIR Y PROBAR EL SISTEMA?
+
+1. **Para ver la Tienda del Cliente:**
+   - Haz doble clic en el archivo `index.html`.
+   - Navega por el catálogo, filtra por categorías, agrega equipos al carrito y simula una compra.
+   - En la barra de navegación superior y en el pie de página verás el botón directo **"⚙️ Panel Admin"**.
+
+2. **Para entrar al Panel de Administración de la Empresa:**
+   - Haz doble clic en el archivo `admin.html` (o haz clic en "Panel Admin" desde la tienda).
+   - Accederás al Backoffice empresarial donde puedes gestionar todo el negocio.
+
+---
+
+## 🛠️ FUNCIONALIDADES DEL PANEL ADMINISTRATIVO (`admin.html`)
+
+### 1. Gestión de Productos (Agregar, Editar y Eliminar):
+- **Agregar Nuevo Producto:** Haz clic en el botón `+ Agregar Producto` o `+ Nuevo Producto`. Completa el nombre, categoría, precio, stock, descripción, etiqueta (Nuevo, Más Vendido, etc.) e imagen (puedes elegir de las fotos predeterminadas, poner una URL o subir una foto desde tu PC).
+- **Editar Información:** Haz clic en el botón `✏️` de cualquier producto para modificar cualquiera de sus datos.
+- **Eliminar Producto:** Haz clic en `🗑️` con confirmación de seguridad.
+
+### 2. Cambiar Precios Rápidamente (Express):
+- En la tabla de productos, haz clic en el icono `💲` o `✏️` junto al precio del producto.
+- Se abrirá una ventana rápida donde solo ingresas el nuevo precio en $ USD. Muestra el porcentaje de variación y se actualiza al instante.
+
+### 3. Control de Stock e Inventario:
+- Puedes sumar o restar stock directamente con los botones `+` y `−` en la tabla.
+- El sistema muestra alertas de stock crítico (productos con 5 unidades o menos).
+
+### 4. Gestión de Pedidos de Clientes:
+- Cada vez que un usuario finaliza una compra en la tienda (`index.html`), el pedido aparece automáticamente en la pestaña **"Pedidos de Clientes"** del panel.
+- La empresa puede ver el nombre del cliente, teléfono, dirección, desglose de artículos y cambiar el estado del pedido:
+  * ⏳ Pendiente
+  * 📦 En Preparación
+  * 🚚 Enviado
+  * ✅ Entregado
+  * ❌ Cancelado
+
+### 5. Sincronización en Tiempo Real (LocalStorage):
+- La tienda del cliente (`index.html`) y el panel de control (`admin.html`) comparten la misma base de datos local en tiempo real.
+- Si cambias un precio o agregas un producto en `admin.html`, el cambio se refleja de inmediato en `index.html`.
+
+### 6. Apartado Catálogo & Montar Productos (Mínimo 6 Productos):
+- **Pestaña "📦 Catálogo" en el Editor Wix Studio**: Ubicada en la barra de herramientas del constructor a la izquierda.
+- **Botón "➕ Montar Nuevo Producto"**: Abre el modal interactivo con carga de fotos (locales o URL), precios, stock, categorías, etiquetas comerciales y especificaciones técnicas.
+- **Validación de Catálogo (Mínimo 6)**: El sistema cuenta en vivo los artículos y muestra un badge dinámico (`✅ Mínimo 6 cumplido (X productos)` o alerta `⚠️ Faltan X productos (mín. 6)`).
+- **Catálogos Temáticos Listos en 1 Clic**: Botones de carga rápida que cumplen de inmediato con el requisito de mínimo 6:
+  * 🛡️ EPP (8 productos)
+  * 🔨 Ferretería & Construcción (8 productos)
+  * ⚡ Tecnología & Gadgets (6 productos)
+  * 👟 Moda & Calzado (6 productos)
+- **Edición Rápida de Precios en Vivo**: Inputs numéricos directamente en la lista del constructor que actualizan el simulador al instante sin recargar la página.
+
+### 7. Inicio de Sesión Puro Front-End (Admin vs Comprador):
+- **Admin**: Acceso completo al Constructor Visual Wix Studio, edición de diseño, catálogo, inventario y despacho de pedidos.
+- **Comprador**: Puede explorar la tienda, agregar al carrito y comprar. Si intenta entrar a `admin.html`, un modal de seguridad bloquea el acceso y le permite volver a la tienda o cambiar de rol con un clic.
+
+### 8. Respaldos y Exportación (JSON):
+- En la pestaña **"Respaldos & Datos"**, puedes descargar una copia de seguridad en formato `.json` de todos tus productos y pedidos, o importar un catálogo previo. También puedes restablecer los datos originales de fábrica cuando desees.
+
+---
+
+## 📁 ESTRUCTURA DE ARCHIVOS
+- `index.html`: Portal web para el cliente (Catálogo, carrito, pasarela de pago, buscador).
+- `app.js`: Lógica interactiva del cliente y sincronización.
+- `styles.css`: Estilos visuales del cliente (diseño oscuro industrial premium).
+- `admin.html`: Panel administrativo tipo Wix Studio con previsualizador en tiempo real y CRUD de catálogo.
+- `admin.js`: Lógica del constructor, catálogo en vivo, validación de mínimo 6 productos y persistencia.
+- `admin.css`: Estilos visuales del panel administrativo y editor visual.
+- `img/`: Carpeta con fotografías de alta calidad de los productos.
