@@ -329,6 +329,8 @@ const app = {
         topBarText.textContent = "🌿 MATERIALES SOSTENIBLES • ENVÍO NEUTRO EN CARBONO • CALIDAD ESCANDINAVA GARANTIZADA 🌿";
       } else if (archetype === 'neobrutal') {
         topBarText.textContent = "⚡ ¡OFERTAS RELÁMPAGO 2026! • 📦 ENVÍO SÚPER RÁPIDO • ¡COMPRA ANTES QUE SE AGOTE! ⚡";
+      } else if (archetype === 'industrial') {
+        topBarText.textContent = "🛡️ SEGURIDAD INDUSTRIAL ANSI Z89.1 / EN • DOTACIÓN Y SUMINISTROS EMPRESARIALES 🛡️";
       } else {
         topBarText.textContent = "⚡ SISTEMA DE INVENTARIO EN VIVO // LATENCIA CERO // DESPACHOS EXPRESS ⚡";
       }
@@ -340,7 +342,7 @@ const app = {
     const storeBrandTagline = document.getElementById("storeBrandTagline");
     if (storeBrandIcon) storeBrandIcon.textContent = config.logo_icon || (activeTemplate ? activeTemplate.icon : "🛍️");
     if (storeBrandName) storeBrandName.textContent = config.name || "Mi Tienda Oficial";
-    if (storeBrandTagline) storeBrandTagline.textContent = config.tagline || (archetype === 'ejecutivo' ? "Boutique Privada & Alta Gama" : archetype === 'moda' ? "Lookbook & Streetwear" : "Tecnología & Vanguardia");
+    if (storeBrandTagline) storeBrandTagline.textContent = config.tagline || (archetype === 'ejecutivo' ? "Boutique Privada & Alta Gama" : archetype === 'moda' ? "Lookbook & Streetwear" : archetype === 'industrial' ? "Seguridad Industrial & Dotación EPP" : "Tecnología & Vanguardia");
 
     // 5. Render Hero Section specific to the archetype
     this.renderHeroSection(archetype, config);
@@ -474,6 +476,75 @@ const app = {
               <span>${config.hero_cta_text || "¡CONSEGUIR EL MÍO YA!"}</span>
               <span>💥</span>
             </a>
+          </div>
+        </div>
+      `;
+    } else if (archetype === "industrial") {
+      heroSection.innerHTML = `
+        <div class="hero-industrial-rugged">
+          <div class="industrial-hazard-strip">
+            <span>⚠ EQUIPOS DE PROTECCIÓN CERTIFICADOS • ANSI Z89.1 • EN 397 • OSHA COMPLIANT ⚠</span>
+          </div>
+          <div class="hero-industrial-grid">
+            <div class="industrial-content-col">
+              <div class="industrial-badge-heavy">
+                <span>🛡️</span>
+                <span id="heroTagText">${config.hero_tag || "🛡️ SEGURIDAD INDUSTRIAL CERTIFICADA ANSI / EN"}</span>
+              </div>
+              <h1 class="industrial-hero-title" id="heroTitle">
+                ${config.hero_title || "Protección y Equipamiento Industrial para Máximo Rendimiento"}
+              </h1>
+              <p class="industrial-hero-desc" id="heroDesc">
+                ${config.hero_desc || "Cascos de impacto ANSI Z89.1, calzado dieléctrico con puntera de acero, protección respiratoria y arneses certificados para obras, minería y plantas industriales."}
+              </p>
+              <div class="industrial-action-row">
+                <a href="#catalogo" class="btn-industrial-primary" id="heroPrimaryCta">
+                  <span>${config.hero_cta_text || "EXPLORAR DOTACIÓN INDUSTRIAL"}</span>
+                  <span>🛡️</span>
+                </a>
+                <a href="admin.html" class="btn-industrial-secondary">
+                  <span>📑 Cotizador B2B para Empresas</span>
+                </a>
+              </div>
+              <div class="industrial-specs-grid">
+                <div class="spec-card">
+                  <span class="icon">⚡</span>
+                  <strong>18 kV</strong>
+                  <small>Dieléctrico</small>
+                </div>
+                <div class="spec-card">
+                  <span class="icon">🔨</span>
+                  <strong>200 J</strong>
+                  <small>Puntera Acero</small>
+                </div>
+                <div class="spec-card">
+                  <span class="icon">📜</span>
+                  <strong>ANSI / EN</strong>
+                  <small>Homologado</small>
+                </div>
+                <div class="spec-card">
+                  <span class="icon">🚚</span>
+                  <strong>24-48h</strong>
+                  <small>Despacho Obra</small>
+                </div>
+              </div>
+            </div>
+            <div class="industrial-media-col">
+              <div class="industrial-featured-frame">
+                <div class="industrial-frame-header">
+                  <span class="hazard-badge">● DOTACIÓN B2B</span>
+                  <span class="spec-pill">NORMA ANSI Z89.1</span>
+                </div>
+                <img src="img/helmet.jpg" alt="Casco Industrial" onerror="this.src='img/catalog/tech_teclado.jpg'">
+                <div class="industrial-frame-footer">
+                  <strong>Casco de Seguridad Industrial PRO con Suspensión</strong>
+                  <div class="price-callout">
+                    <span>Precio Cuadrilla:</span>
+                    <strong>$45.00 USD</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -729,6 +800,48 @@ const app = {
               >
                 ${inStock ? "🛒 ¡AGREGAR YA!" : "¡AGOTADO!"}
               </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // 5. ESTILO INDUSTRIAL & EPP (HEAVY DUTY)
+      if (archetype === "industrial") {
+        return `
+          <div class="product-card card-industrial">
+            <div class="product-media-wrap" onclick="app.openQuickView(${product.id})">
+              <span class="industrial-cert-badge">🛡️ ANSI / EN CERTIFICADO</span>
+              <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy" onerror="this.src='img/catalog/tech_auriculares.jpg'">
+            </div>
+            <div class="product-content">
+              <div class="industrial-sku-row">
+                <span class="ind-tag">HEAVY DUTY</span>
+                <span class="ind-sku">SKU: ${product.sku || 'EPP-' + product.id}</span>
+              </div>
+              <h3 class="product-name" onclick="app.openQuickView(${product.id})">${product.name}</h3>
+              <p class="industrial-desc-snippet">${product.description ? product.description.substring(0, 75) + "..." : "Equipo homologado con certificación internacional para trabajos de alto riesgo."}</p>
+              <div class="industrial-chips-row">
+                <span class="ind-spec-chip">Norma ANSI</span>
+                <span class="ind-spec-chip">Alto Impacto</span>
+                <span class="ind-spec-chip">Garantía B2B</span>
+              </div>
+              <div class="industrial-stock-callout">
+                <span>STOCK DISPONIBLE: <strong>${product.stock} UNIDADES</strong></span>
+              </div>
+              <div class="product-price-row">
+                <div class="price-box">
+                  <span class="price-main">$${Number(product.price).toFixed(2)}</span>
+                  ${product.compareAtPrice ? `<span class="price-compare">$${Number(product.compareAtPrice).toFixed(2)}</span>` : ""}
+                </div>
+                <button 
+                  class="btn-industrial-buy" 
+                  title="Añadir Dotación" 
+                  onclick="app.addToCart(${product.id}, 1)"
+                  ${!inStock ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ""}
+                >
+                  <span>${inStock ? "🛡️ Dotar EPP" : "Agotado"}</span>
+                </button>
+              </div>
             </div>
           </div>
         `;

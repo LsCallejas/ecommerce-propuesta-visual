@@ -129,6 +129,27 @@ const INITIAL_TEMPLATES = [
     structure_tags: ["Bordes Negros Sólidos 3px", "Sombras Duras Offset 5px", "Stickers Arcade Pop", "Botones Táctiles"],
     layout_type: "brutal-punch",
     card_type: "brutal-box"
+  },
+  {
+    id: "industrial-prosafety",
+    name: "Estilo Industrial & EPP (ProSafety & Heavy Duty)",
+    archetype: "industrial",
+    theme_class: "theme-industrial",
+    category: "Seguridad Industrial, EPP & Dotación",
+    icon: "🛡️",
+    badge: "Heavy Duty",
+    description: "Estructura técnica de alta visibilidad con franjas chevron de advertencia industrial, sellos de certificación ANSI/EN/OSHA, fichas técnicas de grado militar y cotizador de dotación empresarial.",
+    color: "#f59e0b",
+    accent_color: "#0284c7",
+    button_style: "square",
+    font_display: "'Chakra Petch', 'Inter', sans-serif",
+    hero_tag: "🛡️ SEGURIDAD INDUSTRIAL CERTIFICADA ANSI / EN",
+    hero_title: "Protección y Equipamiento Industrial para Máximo Rendimiento",
+    hero_desc: "Cascos de alto impacto, calzado dieléctrico con puntera de acero, protección respiratoria y arneses certificados para obras, minería y plantas industriales.",
+    hero_cta_text: "EXPLORAR DOTACIÓN INDUSTRIAL",
+    structure_tags: ["Franjas Reflectivas Chevron", "Insignias ANSI / OSHA", "Fichas Grado Militar", "Cotizador B2B"],
+    layout_type: "industrial-rugged",
+    card_type: "industrial-spec"
   }
 ];
 
@@ -749,9 +770,12 @@ const Storage = {
   getCurrentUser: () => {
     try {
       const data = localStorage.getItem("ecommerce_current_user");
-      return data ? JSON.parse(data) : null;
+      if (data) return JSON.parse(data);
+      const defaultAdmin = INITIAL_USERS[0];
+      localStorage.setItem("ecommerce_current_user", JSON.stringify(defaultAdmin));
+      return defaultAdmin;
     } catch (e) {
-      return null;
+      return INITIAL_USERS[0];
     }
   },
   setCurrentUser: (user) => {

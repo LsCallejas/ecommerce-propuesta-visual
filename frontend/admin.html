@@ -59,12 +59,20 @@
         <span class="nav-item-badge" id="sideSuppliersCount" style="background: var(--admin-primary);">4</span>
       </a>
 
-      <div class="nav-section-title">Configuración & Sistema</div>
+      <div class="nav-section-title">Diseño & Plantillas</div>
 
-      <a class="admin-nav-item" data-view="personalizar">
-        <span class="nav-item-icon">🎨</span>
-        <span>Personalizar Tienda</span>
+      <a class="admin-nav-item" data-view="plantillas" id="sideNavPlantillas" onclick="admin.switchView('plantillas')">
+        <span class="nav-item-icon">🍱</span>
+        <span>Plantillas de Tienda</span>
+        <span class="nav-item-badge" style="background: #f59e0b; color: #fff; font-weight: 800;">6 Temas</span>
       </a>
+
+      <a class="admin-nav-item" data-view="personalizar" onclick="admin.switchView('personalizar')">
+        <span class="nav-item-icon">🎨</span>
+        <span>Personalizar Marca & Hero</span>
+      </a>
+
+      <div class="nav-section-title">Mantenimiento</div>
 
       <a class="admin-nav-item" data-view="auditoria">
         <span class="nav-item-icon">💾</span>
@@ -608,7 +616,7 @@
             <button type="button" class="subnav-tab-btn" id="tabBtnTemplates" onclick="admin.switchCustomizerTab('templates')">
               <span class="tab-icon">🍱</span>
               <span>Plantillas de E-Commerce</span>
-              <span class="tab-badge">5 Diseños</span>
+              <span class="tab-badge" style="background: #f59e0b; color: #fff; font-weight: 800;">6 Diseños</span>
             </button>
             <button type="button" class="subnav-tab-btn" id="tabBtnCode" onclick="admin.switchCustomizerTab('code')">
               <span class="tab-icon">💻</span>
@@ -916,8 +924,8 @@
         <div id="customizerTabTemplates" class="customizer-subtab-panel" style="display: none;">
           <div class="templates-view-header">
             <div>
-              <h2 class="templates-view-title">Galería de Plantillas de E-Commerce</h2>
-              <p class="templates-view-desc">Selecciona un diseño predeterminado para tu tienda. Al aplicar una plantilla se sincronizan automáticamente la paleta de colores, tipografías, banners y estilos.</p>
+              <h2 class="templates-view-title">Galería de 6 Plantillas Profesionales de E-Commerce</h2>
+              <p class="templates-view-desc">Selecciona cualquiera de los <strong>6 arquetipos de diseño</strong> (Ejecutivo Lujo, Moderno Tech, Lookbook Moda, Nórdico Confort, Neo-Brutalist Viral, o <strong>Industrial & EPP ProSafety</strong>). Al aplicar una plantilla se sincronizan en vivo paleta, tipografía, banners y estilos.</p>
             </div>
             <div class="templates-active-pill">
               <span>Plantilla activa:</span>
@@ -1429,7 +1437,7 @@
   <div class="toast-container" id="adminToastContainer"></div>
 
   <!-- Scripts -->
-  <script src="data.js"></script>
-  <script src="admin.js"></script>
+  <script src="data.js?v=9_industrial"></script>
+  <script src="admin.js?v=9_industrial"></script>
 </body>
 </html>

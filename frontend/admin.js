@@ -203,6 +203,27 @@ const admin = {
   },
 
   switchView(viewName) {
+    if (viewName === "plantillas") {
+      this.activeView = "plantillas";
+      document.querySelectorAll(".admin-nav-item").forEach((item) => {
+        item.classList.toggle("active", item.getAttribute("data-view") === "plantillas");
+      });
+      const panels = {
+        dashboard: document.getElementById("viewDashboard"),
+        productos: document.getElementById("viewProductos"),
+        ordenes: document.getElementById("viewOrdenes"),
+        inventario: document.getElementById("viewInventario"),
+        proveedores: document.getElementById("viewProveedores"),
+        personalizar: document.getElementById("viewPersonalizar"),
+        auditoria: document.getElementById("viewAuditoria")
+      };
+      Object.keys(panels).forEach((key) => {
+        if (panels[key]) panels[key].style.display = key === "personalizar" ? "block" : "none";
+      });
+      this.switchCustomizerTab("templates");
+      return;
+    }
+
     this.activeView = viewName;
 
     // Update active class on sidebar items
@@ -1294,6 +1315,22 @@ const admin = {
               <div class="m-card brutal"><span>💥</span><small>POP</small></div>
               <div class="m-card brutal"><span>🚀</span><small>HOT</small></div>
               <div class="m-card brutal"><span>🔥</span><small>TOP</small></div>
+            </div>
+          </div>
+        `;
+      } else if (tmpl.archetype === "industrial") {
+        mockupHtml = `
+          <div class="mockup-wireframe-box mockup-industrial">
+            <div class="mockup-bar industrial-bar">🛡️ CERTIFICACIÓN ANSI Z89.1 • DOTACIÓN B2B 🛡️</div>
+            <div class="mockup-hero-industrial">
+              <span class="m-shield">🛡️</span>
+              <div class="mockup-title-industrial">EQUIPOS EPP</div>
+              <span class="m-btn amber">VER CATÁLOGO PRO</span>
+            </div>
+            <div class="mockup-cards-row">
+              <div class="m-card industrial"><span>👷</span><small>ANSI</small></div>
+              <div class="m-card industrial"><span>🥾</span><small>200J</small></div>
+              <div class="m-card industrial"><span>🥽</span><small>UV400</small></div>
             </div>
           </div>
         `;
