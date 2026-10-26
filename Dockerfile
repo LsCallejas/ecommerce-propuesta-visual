@@ -15,7 +15,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copia de los archivos estáticos de la aplicación web
 WORKDIR /usr/share/nginx/html
-COPY . /usr/share/nginx/html
+COPY ./frontend /usr/share/nginx/html
 
 # Exponer el puerto HTTP estándar
 EXPOSE 80

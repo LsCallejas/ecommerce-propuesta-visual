@@ -1,108 +1,110 @@
-# 🛍️ Plataforma E-Commerce Oficial & Panel Administrativo
-
-> **Proyecto de E-Commerce de Alta Gama, Multiarquetipo y Gestión Backoffice Comercial**  
-> **Presentador / Administrador:** Daniel Campos  
-> **Versión:** 8.0 (Arquitectura Modular Headless / Zero-Dependencies)
-
----
-
-## 🚀 Descripción General
-
-Esta plataforma es un sistema de **Comercio Electrónico y Gestión Administrativa (Backoffice)** desarrollado para ofrecer una experiencia comercial integral tanto al cliente comprador como al dueño del negocio.
-
-A diferencia de los prototipos convencionales, el sistema implementa:
-1. **5 Arquetipos Arquitectónicos Reales**: Diseños con estructuras HTML/CSS radicalmente distintas (no solo cambios de color), desde estilos de Lujo y Streetwear hasta Nórdico y Neobrutalista.
-2. **Lógica Financiera Comercial**: Registro de Costos de Adquisición, Cálculo de Margen de Ganancia Bruto/Neto, ROI % proyectado en tiempo real y módulo de Proveedores y Abastecimiento de Stock.
-3. **Control Estricto de Roles y Seguridad**: Experiencia de compra 100% limpia para visitantes, con candado de seguridad (*Security Gate*) para acceso restringido a métricas y panel administrativo solo para **Daniel Campos**.
-4. **Personalizador Tipo Wix y Editor de Plantillas**: Configuración visual de marca, paletas de colores, textos de banners y un editor de plantillas personalizado con sincronización en tiempo real.
-5. **Zero-Dependencies (100% Portable)**: Opera directamente en el navegador mediante el motor reactivo de almacenamiento relacional local, sin requerir instalación de servidores MySQL, Node.js ni Docker para su demostración inmediata.
+# 🛍️ Plataforma E-Commerce Oficial & Backoffice Administrativo
+> **Sistema de Comercio Electrónico Multi-Arquetipo con Micro-Backend REST, Base de Datos Relacional PostgreSQL 16 y Orquestación Docker Compose.**  
+> **Responsable & Administrador:** Daniel Campos  
+> **Versión:** 9.0 (Producción Enterprise)  
 
 ---
 
-## 🔑 Credenciales de Acceso
+## 🏛️ 1. Arquitectura del Repositorio
 
-| Rol | Usuario / Correo | Contraseña | Experiencia |
-| :--- | :--- | :--- | :--- |
-| **👑 Dueño / Administrador** | `daniel@tienda.com` *(o `admin@tienda.com`)* | `admin123` | Acceso al **Modo Dueño**, panel administrativo completo, métricas financieras, gestión de productos, órdenes, compras a proveedores y personalizador de plantillas. |
-| **🛍️ Cliente Comprador** | `cliente@tienda.com` | `123` | Experiencia de compra limpia: catálogo interactivo, carrito deslizable, cálculo de envío gratis y checkout con generación de número de pedido. |
-| **👤 Visitante Anónimo** | *(Sin sesión)* | *(Sin clave)* | Navegación estándar con botón de inicio de sesión. Las herramientas administrativas se encuentran totalmente ocultas. |
-
----
-
-## ⚡ Opciones de Inicio y Ejecución
-
-La plataforma implementa una **estrategia de ejecución dual**:
-
-### Opción 1: Con Docker Compose (Entorno de Producción Oficial con PostgreSQL 16)
-Si tienes **Docker / WSL** en el sistema:
-1. Haz doble clic en [`docker-iniciar.bat`](docker-iniciar.bat) o ejecuta:
-   ```bash
-   docker compose up -d --build
-   ```
-2. Esto levantará los 3 servicios empresariales interconectados:
-   - **Servidor Web Nginx** (`ecommerce_web_app` en puerto `:8080`): Interfaz visual de la tienda y panel administrativo.
-   - **Micro-Backend REST API** (`ecommerce_api_service` en puerto `:3000`): Controlador Express con pool de conexiones ACID hacia PostgreSQL 16.
-   - **Base de Datos Relacional PostgreSQL 16** (`ecommerce_postgres_db` en puerto `:5432`): Esquema relacional con tablas de productos, órdenes, proveedores y compras.
-3. Al ingresar a `http://localhost:8080`, el indicador interactivo `🟢 PostgreSQL 16 (En Vivo)` permite consultar la telemetría en tiempo real y verificar la conexión con la base de datos.
-4. Para detener los contenedores preservando la base de datos: [`docker-detener.bat`](docker-detener.bat) o `docker compose down`.
-
-### Opción 2: Portátil Sin Dependencias (En 1 Clic)
-Si no tienes Docker en la máquina:
-1. Ejecuta el archivo:
-   ```cmd
-   iniciar_demo.bat
-   ```
-2. O simplemente abre [`index.html`](index.html) en tu navegador web (Chrome, Edge, Brave, Firefox).
-3. El servidor local correrá en: `http://localhost:8080/index.html`.
-
----
-
-## 📂 Estructura del Proyecto
+El proyecto está organizado bajo una **arquitectura desacoplada y modular** que separa limpiamente las capas de presentación, lógica de negocio, persistencia, automatización y documentación académica:
 
 ```text
-├── Dockerfile                        # Imagen de producción Nginx Alpine
-├── docker-compose.yml                # Orquestación de Web Nginx + PostgreSQL 16
-├── nginx.conf                        # Configuración de Nginx con Gzip y cabeceras de seguridad
-├── docker-iniciar.bat                # Lanzador de Docker Compose en 1 clic
-├── docker-detener.bat                # Detenedor de Docker Compose
-├── database/
-│   └── init.sql                      # DDL oficial de PostgreSQL 16 (7 tablas, vista e índices)
-├── index.html                        # Tienda pública para clientes y compradores
-├── styles.css                        # Sistema de diseño, tokens CSS y los 5 arquetipos visuales
-├── app.js                            # Lógica reactiva de catálogo, carrito, filtros, checkout y tracking
-├── data.js                           # Capa de datos relacional (Adapter Pattern) y catálogo
-├── admin.html                        # Panel de control y backoffice administrativo
-├── admin.css                         # Estilos del dashboard, analítica y personalizador
-├── admin.js                          # Lógica de analítica, proveedores, órdenes, auditoría y plantillas
-├── iniciar_demo.bat                  # Script de arranque en 1 clic (servidor local sin dependencias)
-├── MANUAL_PROYECTO_ECOMMERCE.md      # Manual técnico y operativo completo (9 capítulos)
-├── PLAN_IMPLEMENTACION_PRODUCCION.md # Plan de transición empresarial con PostgreSQL y Docker
-├── LEEME_CLIENTE.md                  # Guía rápida de presentación
-└── img/                              # Galería de imágenes y productos del catálogo
+ecommerce_propuesta_visual/
+├── backend/                       # Micro-Backend REST API (Node.js 20 Express + pg)
+│   ├── Dockerfile                 # Contenedor Node Alpine con healthcheck
+│   ├── package.json               # Dependencias: express, pg, cors
+│   ├── server.js                  # Controladores REST, Pool de conexiones y transacciones ACID
+│   └── .dockerignore
+│
+├── database/                      # Motor Relacional PostgreSQL 16
+│   ├── init.sql                   # DDL: 7 tablas, vista de rentabilidad, restricciones e índices
+│   └── README.md                  # Especificaciones de conexión directa (psql / DBeaver)
+│
+├── frontend/                      # Aplicación Web & Backoffice (Vanilla HTML5/CSS3/ES6)
+│   ├── img/                       # Catálogo fotográfico de alta resolución
+│   ├── index.html                 # Tienda oficial orientada al cliente (Catálogo y Carrito)
+│   ├── admin.html                 # Panel de administración exclusivo para Daniel Campos
+│   ├── styles.css                 # Sistema de diseño de la tienda pública
+│   ├── admin.css                  # Hoja de estilos del panel de control empresarial
+│   ├── app.js                     # Controlador de experiencia del cliente y checkout
+│   ├── admin.js                   # Controlador de métricas de rentabilidad y órdenes
+│   ├── data.js                    # Capa Storage: Sincronización REST en vivo / Offline fallback
+│   └── README.md                  # Especificaciones del frontend
+│
+├── docs/                          # Documentación Técnica y Capítulos de Tesis
+│   ├── architecture/              # Diagramas ERD, topología Docker y modelo de datos (.md / .docx)
+│   ├── thesis/                    # Capítulos I, II, III, IV Comercial, SRS, Resultados y PDFs de grado
+│   ├── manuals/                   # Manuales de operación del sistema y experiencia cliente
+│   └── README.md                  # Directorio maestro de documentos
+│
+├── scripts/                       # Herramientas de automatización y despliegue
+│   ├── docker-iniciar.bat         # Levantamiento de contenedores con verificación de salud
+│   ├── docker-detener.bat         # Detención limpia preservando volúmenes persistentes
+│   ├── iniciar_demo.bat           # Demostración autónoma en 1 clic sin dependencias externas
+│   ├── subir_a_github.bat         # Sincronización automática con repositorio remoto
+│   └── build_db_architecture_docx.py # Generador de informes formales Word
+│
+├── docker-compose.yml             # Orquestación de servicios (web, api, db) en red bridge
+├── Dockerfile                     # Imagen de producción del Servidor Web Nginx 1.25 Alpine
+├── nginx.conf                     # Reverse Proxy (/api/ -> api:3000), compresión Gzip y headers
+├── .dockerignore                  # Exclusión de archivos pesados de compilación
+├── .gitignore                     # Control de versiones Git
+└── README.md                      # Ficha técnica principal del proyecto
 ```
 
 ---
 
-## 🎨 Los 5 Arquetipos Visuales Disponibles
+## 🐳 2. Despliegue con Docker Compose (Recomendado)
 
-1. **⚜️ Estilo Ejecutivo (Luxury & Corporate)**: Estructura monumental centrada, tipografía serif *Playfair Display*, paleta carbón y acentos en oro champán.
-2. **⚡ Estilo Moderno (Tech Vanguard & Cyber)**: División en 2 columnas, showcase holográfico de hardware, telemetría de rendimiento y chips de especificaciones técnicas.
-3. **🔥 Estilo a la Moda (Lookbook Editorial)**: Tarjetas en formato retrato vertical 3:4, selector de tallas en hover y tipografía urbana.
-4. **🌿 Estilo Nórdico (Minimal & Cozy Living)**: Diseño orgánico espacioso, fondos cálidos, acentos botánicos y sellos de sostenibilidad.
-5. **★ Estilo Neobrutalista (Pop & High Impact)**: Bordes negros sólidos de 3px, sombras duras desplazadas de 5px, stickers de ofertas y botones arcade táctiles.
+Si tienes **Docker Desktop / WSL** instalado en tu equipo:
+
+1. Ejecuta el comando de inicio en la raíz del proyecto:
+   ```bash
+   docker compose up -d --build
+   ```
+   *(o haz doble clic en [`scripts/docker-iniciar.bat`](scripts/docker-iniciar.bat)).*
+
+2. Se levantarán automáticamente los **3 servicios interconectados**:
+   - **`ecommerce_web_app`** (`http://localhost:8080`): Servidor Nginx que entrega la tienda y el panel de administración.
+   - **`ecommerce_api_service`** (`puerto interno :3000`): Micro-backend Express conectado nativamente con pool de conexiones `pg`.
+   - **`ecommerce_postgres_db`** (`puerto :5432`): Motor relacional PostgreSQL 16 con esquema ACID y volumen persistente `ecommerce_postgres_data`.
+
+3. **Acceso Inmediato en el Navegador:**
+   - 🛍️ **Tienda Pública:** [http://localhost:8080](http://localhost:8080)
+   - 👑 **Panel Administrativo (Daniel Campos):** [http://localhost:8080/admin.html](http://localhost:8080/admin.html)
+   - 🐘 **Healthcheck & Telemetría PostgreSQL:** [http://localhost:8080/api/health](http://localhost:8080/api/health)
+
+4. **Para detener los servicios:**
+   ```bash
+   docker compose down
+   ```
+   *(Los datos registrados se mantendrán intactos en el volumen persistente).*
 
 ---
 
-## 🛠️ Tecnologías Empleadas
+## 🔑 3. Credenciales y Roles de Acceso
 
-- **Frontend Core**: HTML5 Semántico, Vanilla JavaScript (ES6+ Modular y Reactivo).
-- **Diseño & Estilos**: Vanilla CSS3 Puro (Variables CSS, Flexbox, CSS Grid, Glassmorphism y Micro-animaciones).
-- **Capa de Datos**: Motor Relacional simulado en `localStorage` con patrón *Headless / API-Ready*.
-- **Iconografía**: Tipografías nativas y assets vectoriales optimizados para carga ultrarrápida.
+| Rol | Correo / Usuario | Contraseña | Alcance en el Sistema |
+| :--- | :--- | :--- | :--- |
+| **👑 Dueño / Administrador** | `daniel@tienda.com` *(o `admin@tienda.com`)* | `admin123` | Control total del **Modo Dueño**: KPIs de ventas, márgenes brutos, inventario, compras a proveedores, auditoría y personalizador de plantillas. |
+| **🛍️ Cliente Comprador** | `cliente@tienda.com` | `123` | Catálogo interactivo, carrito de compras deslizable, comprobante imprimible y seguimiento de pedidos por tracking. |
+| **👤 Visitante Anónimo** | *(Sin sesión)* | *(Sin clave)* | Navegación estándar de compra. Las herramientas administrativas se encuentran completamente ocultas. |
 
 ---
 
-## 👨‍💻 Autor y Presentación
+## 💻 4. Modo Portátil Sin Dependencias (1 Clic)
 
-- **Estudiante / Expositor:** Daniel Campos
-- **Proyecto:** Propuesta y Plataforma Comercial de E-Commerce
+Si necesitas realizar una presentación en un ordenador que **no disponga de Docker**:
+- Ejecuta [`scripts/iniciar_demo.bat`](scripts/iniciar_demo.bat) (o el acceso directo en la raíz).
+- La aplicación conmutará de forma automática al motor de almacenamiento local reactivo sin mostrar errores ni requerir servidores externos.
+
+---
+
+## 📚 5. Documentación Completa y Tesis
+
+Toda la documentación académica e informes de ingeniería están organizados en [`docs/`](docs/):
+- **Arquitectura de Base de Datos:** [`docs/architecture/ARQUITECTURA_BASE_DE_DATOS_POSTGRESQL.md`](docs/architecture/ARQUITECTURA_BASE_DE_DATOS_POSTGRESQL.md) *(con diagramas ERD, topología y diccionario de datos).*
+- **Informe Word para Jurado:** [`docs/architecture/ARQUITECTURA_BASE_DE_DATOS_POSTGRESQL.docx`](docs/architecture/ARQUITECTURA_BASE_DE_DATOS_POSTGRESQL.docx)
+- **Capítulos de Tesis de Grado:** [`docs/thesis/`](docs/thesis/) *(Capítulos I, II, III, IV Comercial, SRS y Resultados).*
+- **Manual de Operaciones:** [`docs/manuals/MANUAL_PROYECTO_ECOMMERCE.md`](docs/manuals/MANUAL_PROYECTO_ECOMMERCE.md)

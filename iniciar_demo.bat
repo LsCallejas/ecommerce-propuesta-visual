@@ -14,10 +14,10 @@ where python >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
     echo  [OK] Python detectado. Iniciando servidor web en http://localhost:8080 ...
     start http://localhost:8080/index.html
-    python -m http.server 8080
+    python -m http.server 8080 --directory frontend
 ) else (
     echo  [INFO] Abriendo directamente en tu navegador predeterminado...
-    start index.html
+    start frontend\index.html
 )
 
 pause
