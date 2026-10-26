@@ -217,7 +217,8 @@ const admin = {
       ordenes: document.getElementById("viewOrdenes"),
       inventario: document.getElementById("viewInventario"),
       proveedores: document.getElementById("viewProveedores"),
-      personalizar: document.getElementById("viewPersonalizar")
+      personalizar: document.getElementById("viewPersonalizar"),
+      auditoria: document.getElementById("viewAuditoria")
     };
 
     Object.keys(panels).forEach((key) => {
@@ -231,6 +232,46 @@ const admin = {
     if (viewName === "inventario") this.renderInventoryTable();
     if (viewName === "proveedores") this.renderSuppliersAndPurchases();
     if (viewName === "personalizar") this.loadStoreSettingsToForm();
+    if (viewName === "auditoria") this.renderAuditoriaView();
+  },
+
+  renderAuditoriaView() {
+    try {
+      let totalChars = 0;
+      for (let x in localStorage) {
+        if (localStorage.hasOwnProperty(x)) {
+          totalChars += (localStorage[x].length + x.length) * 2;
+        }
+      }
+      const kb = (totalChars / 1024).toFixed(1);
+      const sizeElem = document.getElementById("auditStorageSize");
+      if (sizeElem) sizeElem.textContent = `${kb} KB`;
+    } catch (e) {}
+  },
+
+  handleImportDatabase(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const res = Storage.importDatabaseJson(event.target.result);
+      if (res.success) {
+        this.showToast("✅ Base de datos restaurada correctamente desde el archivo JSON.");
+        setTimeout(() => window.location.reload(), 800);
+      } else {
+        alert("Error al importar respaldo: " + res.error);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  },
+
+  confirmFactoryReset() {
+    if (confirm("⚠️ ¿Estás seguro de que deseas restablecer los datos de fábrica? Se reiniciarán todos los productos, proveedores y órdenes a la configuración de demostración limpia.")) {
+      Storage.resetToFactoryDefaults();
+      this.showToast("🔄 Sistema restablecido a los datos de fábrica.");
+      setTimeout(() => window.location.reload(), 800);
+    }
   },
 
   renderAll() {

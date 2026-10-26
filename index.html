@@ -62,6 +62,11 @@ autocomplete="off"
 
 <!-- Header Actions -->
 <div class="nav-actions">
+<!-- Tracking Order Button -->
+<button class="btn-icon-badge" onclick="app.openTrackingModal()" title="Rastrear Estado de Pedido (Tracking)">
+<span>📦</span>
+</button>
+
 <!-- Cart Button -->
 <button id="openCartBtn" class="btn-icon-badge" title="Ver Carrito de Compras">
 <span>🛒</span>
@@ -304,13 +309,45 @@ Tu orden <strong id="successOrderId" style="color: var(--primary);">ORD-XXXX</st
 <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 12px; margin-bottom: 20px; font-size: 0.82rem; color: var(--slate-600); text-align: left;">
 💡 <strong>Siguiente paso:</strong> Un asesor de ventas se pondrá en contacto contigo por WhatsApp para confirmar los detalles de despacho y facturación.
 </div>
-<div style="display: flex; gap: 10px; justify-content: center;">
-<button class="btn-hero-primary" id="closeSuccessBtn" style="padding: 10px 20px;">
+<div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+<button class="btn-hero-primary" id="closeSuccessBtn" style="padding: 10px 18px;">
 <span>Seguir Comprando</span>
 </button>
-<a href="admin.html" class="btn-hero-secondary" style="padding: 10px 20px;">
+<button type="button" class="btn-hero-secondary" onclick="app.printOrderReceipt()" style="padding: 10px 18px; color: var(--primary); border-color: var(--primary);">
+<span>🖨️ Imprimir Factura</span>
+</button>
+<a href="admin.html" class="btn-hero-secondary" style="padding: 10px 18px;">
 <span>Ver en Admin ⚡</span>
 </a>
+</div>
+</div>
+</div>
+
+<!-- Modal Rastreo de Pedido para Clientes -->
+<div class="modal-overlay" id="trackingModal" style="display: none;">
+<div class="modal-card" style="max-width: 480px;">
+<button class="modal-close-btn" onclick="app.closeTrackingModal()" type="button">✕</button>
+<div style="text-align: center; margin-bottom: 16px;">
+<div style="font-size: 2.2rem; margin-bottom: 6px;">📦</div>
+<h2 style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 900; margin: 0 0 4px 0; color: var(--slate-800);">
+Rastrear mi Pedido
+</h2>
+<p style="font-size: 0.85rem; color: var(--slate-600); margin: 0;">
+Ingresa el número de tu orden (ej: <strong>ORD-6443</strong>) para consultar el estatus en vivo.
+</p>
+</div>
+
+<form id="trackingForm" onsubmit="app.handleTrackingSubmit(event)" style="margin-bottom: 14px;">
+<div style="display: flex; gap: 8px;">
+<input type="text" id="trackingInput" class="form-input" placeholder="Ej: ORD-6443" required style="font-family: monospace; font-size: 0.95rem; text-transform: uppercase;">
+<button type="submit" class="btn-hero-primary" style="padding: 10px 18px; white-space: nowrap;">
+<span>Consultar</span>
+</button>
+</div>
+</form>
+
+<div id="trackingResult" style="display: none; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 16px;">
+<!-- Injected by JavaScript -->
 </div>
 </div>
 </div>

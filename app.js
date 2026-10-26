@@ -1045,7 +1045,7 @@ const app = {
 
     // Generate unique order ID
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const orderId = `PED-${randomNum}`;
+    const orderId = `ORD-${randomNum}`;
 
     const config = Storage.getStoreConfig();
 
@@ -1066,6 +1066,8 @@ const app = {
         price: item.price
       }))
     };
+
+    this.lastCreatedOrder = newOrder;
 
     // Save order
     const existingOrders = Storage.getOrders();
@@ -1096,6 +1098,184 @@ const app = {
     if (successOrderId) successOrderId.textContent = orderId;
 
     document.getElementById("orderSuccessModal")?.classList.add("open");
+  },
+
+  /* ==========================================================================
+     ORDER RECEIPT / INVOICE PRINTING
+     ========================================================================== */
+  printOrderReceipt() {
+    const order = this.lastCreatedOrder || Storage.getOrders()[0];
+    if (!order) return;
+    const config = Storage.getStoreConfig();
+    const printWindow = window.open("", "_blank", "width=750,height=800");
+    if (!printWindow) {
+      alert("Por favor habilita las ventanas emergentes para imprimir el comprobante de compra.");
+      return;
+    }
+    const itemsHtml = (order.items || []).map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.name || "Producto"}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.qty || 1}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">$${Number(item.price).toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">$${((item.price || 0) * (item.qty || 1)).toFixed(2)}</td>
+      </tr>
+    `).join("");
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Comprobante de Compra - ${order.id}</title>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #1e293b; max-width: 700px; margin: 0 auto; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 24px; }
+          .title { font-size: 24px; font-weight: 900; color: #0f172a; margin: 0; }
+          .order-badge { background: #dbeafe; color: #1d4ed8; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; font-size: 14px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+          th { background: #f8fafc; padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1; font-weight: 700; color: #475569; }
+          .total-box { margin-left: auto; width: 280px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+          .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+          .total-main { font-size: 18px; font-weight: 900; color: #0f172a; border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 8px; }
+          .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+          @media print { body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 class="title">${config.name || "Mi Tienda Oficial"}</h1>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">${config.tagline || "E-Commerce Oficial"}</p>
+          </div>
+          <div style="text-align: right;">
+            <span class="order-badge">COMPROBANTE OFICIAL</span>
+            <div style="font-family: monospace; font-size: 18px; font-weight: 900; margin-top: 6px; color: #2563eb;">${order.id}</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${order.date}</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <strong style="color: #64748b; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">DATOS DEL CLIENTE</strong>
+            <div style="font-size: 15px; font-weight: 700; margin-top: 4px;">${order.customer_name}</div>
+            <div style="color: #64748b;">${order.customer_email || 'Sin correo registrado'}</div>
+            <div style="color: #64748b;">${order.customer_phone || ''}</div>
+          </div>
+          <div>
+            <strong style="color: #64748b; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">DATOS DE ENTREGA & PAGO</strong>
+            <div style="margin-top: 4px;"><strong>Destino:</strong> ${order.customer_address || 'Entrega estándar'}</div>
+            <div><strong>Método:</strong> ${order.payment_method || 'Pago Móvil / Transferencia'}</div>
+            <div><strong>Estado:</strong> ${order.status || 'Confirmado'}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th style="text-align: center;">Cant.</th>
+              <th style="text-align: right;">P. Unit</th>
+              <th style="text-align: right;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div class="total-box">
+          <div class="total-row"><span>Total Facturado:</span> <strong>$${Number(order.total).toFixed(2)}</strong></div>
+          <div class="total-row total-main"><span>TOTAL USD:</span> <span>$${Number(order.total).toFixed(2)}</span></div>
+        </div>
+
+        <div class="footer">
+          <p>Documento de control y constancia de orden electrónica emitido por ${config.name || "Mi Tienda Oficial"}.</p>
+        </div>
+        <script>window.onload = function() { window.print(); };</script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  },
+
+  /* ==========================================================================
+     ORDER TRACKING MODAL (SEGUIMIENTO DE PEDIDOS)
+     ========================================================================== */
+  openTrackingModal() {
+    const modal = document.getElementById("trackingModal");
+    if (modal) {
+      modal.style.display = "flex";
+      modal.classList.add("open");
+    }
+  },
+
+  closeTrackingModal() {
+    const modal = document.getElementById("trackingModal");
+    if (modal) {
+      modal.style.display = "none";
+      modal.classList.remove("open");
+    }
+  },
+
+  handleTrackingSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById("trackingInput");
+    const resultBox = document.getElementById("trackingResult");
+    if (!input || !resultBox) return;
+
+    const query = input.value.trim();
+    const order = Storage.trackOrder(query);
+
+    resultBox.style.display = "block";
+
+    if (!order) {
+      resultBox.innerHTML = `
+        <div style="text-align: center; color: var(--rose); padding: 10px;">
+          <span style="font-size: 1.8rem;">❌</span>
+          <h4 style="margin: 6px 0; font-size: 1rem;">Orden no encontrada</h4>
+          <p style="font-size: 0.82rem; color: var(--slate-600); margin: 0;">
+            Verifica el código ingresado (ej: <strong>ORD-XXXX</strong>) e inténtalo de nuevo.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    const statusSteps = ["Pendiente", "En Preparación", "Enviado", "Entregado"];
+    const currentIdx = Math.max(0, statusSteps.indexOf(order.status || "Pendiente"));
+
+    resultBox.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px;">
+        <div>
+          <span style="font-family: monospace; font-weight: 800; font-size: 1.1rem; color: var(--primary);">${order.id}</span>
+          <div style="font-size: 0.75rem; color: var(--slate-500);">${order.date}</div>
+        </div>
+        <span class="badge-status active" style="font-size: 0.8rem; font-weight: 700;">
+          ${order.status || "Pendiente"}
+        </span>
+      </div>
+
+      <!-- Tracking Progress Steps -->
+      <div style="display: flex; justify-content: space-between; margin: 16px 0; position: relative; font-size: 0.72rem; text-align: center;">
+        ${statusSteps.map((step, idx) => `
+          <div style="flex: 1; position: relative;">
+            <div style="width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 4px auto; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 10px; background: ${idx <= currentIdx ? 'var(--primary)' : 'var(--slate-200)'}; color: ${idx <= currentIdx ? '#ffffff' : '#64748b'};">
+              ${idx <= currentIdx ? '✓' : idx + 1}
+            </div>
+            <span style="font-weight: ${idx === currentIdx ? '800' : '500'}; color: ${idx === currentIdx ? 'var(--slate-900)' : 'var(--slate-500)'};">
+              ${step}
+            </span>
+          </div>
+        `).join("")}
+      </div>
+
+      <div style="font-size: 0.82rem; color: var(--slate-700); line-height: 1.6; background: #ffffff; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--slate-200);">
+        <div><strong>Cliente:</strong> ${order.customer_name}</div>
+        <div><strong>Destino:</strong> ${order.customer_address || "Retiro en local"}</div>
+        <div><strong>Total Pagado:</strong> <strong style="color: var(--slate-900); font-family: var(--font-display); font-size: 0.95rem;">$${Number(order.total).toFixed(2)}</strong></div>
+      </div>
+    `;
   },
 
   /* ==========================================================================

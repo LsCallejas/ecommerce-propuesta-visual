@@ -59,11 +59,16 @@
         <span class="nav-item-badge" id="sideSuppliersCount" style="background: var(--admin-primary);">4</span>
       </a>
 
-      <div class="nav-section-title">Configuración</div>
+      <div class="nav-section-title">Configuración & Sistema</div>
 
       <a class="admin-nav-item" data-view="personalizar">
         <span class="nav-item-icon">🎨</span>
         <span>Personalizar Tienda</span>
+      </a>
+
+      <a class="admin-nav-item" data-view="auditoria">
+        <span class="nav-item-icon">💾</span>
+        <span>Respaldos & Auditoría</span>
       </a>
     </nav>
 
@@ -1051,6 +1056,127 @@
 
         </div>
 
+      </section>
+
+      <!-- ==================================================================
+           VIEW 7: RESPALDOS, AUDITORÍA & EXPORTACIÓN EMPRESARIAL
+           ================================================================== -->
+      <section id="viewAuditoria" class="admin-view-panel" style="display: none;">
+        <div class="module-header">
+          <div>
+            <h1 class="module-title">Gobernanza de Datos, Respaldos & Auditoría</h1>
+            <p class="module-desc">Herramientas de nivel empresarial para exportar reportes a Excel, respaldar la base de datos completa en JSON o restablecer el sistema a su configuración limpia.</p>
+          </div>
+          <button class="btn-admin-primary" onclick="Storage.exportDatabaseJson()" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <span>💾 Descargar Respaldo JSON</span>
+          </button>
+        </div>
+
+        <!-- System Health KPI Cards -->
+        <div class="kpi-cards-grid" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Estado de la Base de Datos</span>
+              <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-emerald);">🟢</div>
+            </div>
+            <div class="kpi-value" style="color: var(--admin-emerald); font-size: 1.3rem;">Activa & Saludable</div>
+            <div class="kpi-trend positive"><span>Modo Headless / LocalStorage (API Ready)</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Colecciones de Datos</span>
+              <div class="kpi-icon-box" style="background: rgba(37, 99, 235, 0.1); color: var(--admin-primary);">🗄️</div>
+            </div>
+            <div class="kpi-value" id="auditTablesCount">6 Tablas</div>
+            <div class="kpi-trend neutral"><span>Productos, Órdenes, Proveedores, Compras...</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Almacenamiento Utilizado</span>
+              <div class="kpi-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--admin-amber);">⚡</div>
+            </div>
+            <div class="kpi-value" id="auditStorageSize">~48 KB</div>
+            <div class="kpi-trend neutral"><span>&lt; 1% de cuota local del navegador</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top-row">
+              <span class="kpi-label">Integridad de Esquemas</span>
+              <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.1); color: var(--admin-purple);">🛡️</div>
+            </div>
+            <div class="kpi-value" style="font-size: 1.25rem;">100% Válida</div>
+            <div class="kpi-trend positive"><span>v8_ecommerce_store (Sin conflictos)</span></div>
+          </div>
+        </div>
+
+        <!-- Action Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+          
+          <!-- Card 1: Reportes Comerciales a Excel -->
+          <div class="table-card" style="padding: 24px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <span style="font-size: 1.8rem;">📊</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--admin-text-main);">Reportes Contables en Excel (CSV)</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--admin-text-muted);">Descarga hojas de cálculo compatibles con Microsoft Excel y Google Sheets.</p>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 16px;">
+              Genera reportes auditables con desglose de clientes, fechas, márgenes brutos, métodos de pago y valorización comercial de mercancía.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-table-action" onclick="Storage.exportOrdersCsv()" style="padding: 10px 16px; font-weight: 700; color: var(--admin-primary); border-color: var(--admin-primary);">
+                <span>📑 Descargar Órdenes (.CSV)</span>
+              </button>
+              <button class="btn-table-action" onclick="Storage.exportInventoryCsv()" style="padding: 10px 16px; font-weight: 700; color: var(--admin-emerald); border-color: var(--admin-emerald);">
+                <span>📦 Descargar Inventario & Márgenes (.CSV)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Respaldo Completo de Base de Datos -->
+          <div class="table-card" style="padding: 24px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <span style="font-size: 1.8rem;">💾</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--admin-text-main);">Respaldos de Base de Datos (JSON)</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--admin-text-muted);">Migra o respalda la información completa de la tienda en 1 clic.</p>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 16px;">
+              Exporta o importa el archivo de base de datos con toda la configuración de marca, catálogo, proveedores y órdenes de la tienda.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <button class="btn-admin-primary" onclick="Storage.exportDatabaseJson()" style="padding: 10px 16px;">
+                <span>⬇️ Exportar JSON</span>
+              </button>
+              <label class="btn-table-action" style="padding: 10px 16px; cursor: pointer; margin: 0; font-weight: 700;">
+                <span>⬆️ Cargar Respaldo JSON</span>
+                <input type="file" id="auditImportJsonFile" accept=".json" style="display: none;" onchange="admin.handleImportDatabase(event)">
+              </label>
+            </div>
+          </div>
+
+          <!-- Card 3: Restablecimiento de Fábrica / Demo -->
+          <div class="table-card" style="padding: 24px; border-left: 4px solid var(--admin-rose);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <span style="font-size: 1.8rem;">🔄</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--admin-rose);">Restablecer Datos de Demostración</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--admin-text-muted);">Reiniciar el sistema a su estado inicial limpio de prueba.</p>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 16px;">
+              Útil durante presentaciones y evaluaciones con profesores. Vuelve a inyectar el catálogo original, los 4 proveedores y limpia pedidos de prueba.
+            </p>
+            <button class="btn-table-action" onclick="admin.confirmFactoryReset()" style="color: var(--admin-rose); border-color: var(--admin-rose); padding: 10px 16px; font-weight: 700;">
+              <span>⚠️ Restablecer a Datos de Fábrica</span>
+            </button>
+          </div>
+
+        </div>
       </section>
 
     </main>

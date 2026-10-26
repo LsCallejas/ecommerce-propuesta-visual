@@ -690,5 +690,137 @@ const Storage = {
   },
   logout: () => {
     Storage.setCurrentUser(null);
+  },
+
+  // ========================================================================
+  // AUDITORÍA, RESPALDOS & EXPORTACIÓN EMPRESARIAL
+  // ========================================================================
+  exportDatabaseJson: () => {
+    const backup = {
+      version: "v8_ecommerce_store",
+      exported_at: new Date().toISOString(),
+      store_config: Storage.getStoreConfig(),
+      products: Storage.getProducts(),
+      suppliers: Storage.getSuppliers(),
+      purchases: Storage.getPurchases(),
+      orders: Storage.getOrders(),
+      active_template: Storage.getActiveTemplateId()
+    };
+    const jsonStr = JSON.stringify(backup, null, 2);
+    Storage.downloadFile(`respaldo_tienda_${new Date().toISOString().slice(0, 10)}.json`, jsonStr, "application/json");
+    return backup;
+  },
+
+  importDatabaseJson: (jsonString) => {
+    try {
+      const data = JSON.parse(jsonString);
+      if (!data.products || !data.store_config) {
+        throw new Error("El archivo no tiene la estructura de respaldo válida de la tienda.");
+      }
+      if (data.store_config) Storage.saveStoreConfig(data.store_config);
+      if (data.products) Storage.saveProducts(data.products);
+      if (data.suppliers) Storage.saveSuppliers(data.suppliers);
+      if (data.purchases) Storage.savePurchases(data.purchases);
+      if (data.orders) Storage.saveOrders(data.orders);
+      if (data.active_template) Storage.setActiveTemplateId(data.active_template);
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  exportOrdersCsv: () => {
+    const orders = Storage.getOrders();
+    const headers = ["ID Orden", "Fecha", "Cliente", "Email", "Telefono", "Direccion", "Metodo Pago", "Total USD", "Estado", "Articulos"];
+    const rows = orders.map(o => {
+      const itemsSummary = (o.items || []).map(i => `${i.name || i.product_name} (x${i.qty || i.quantity || 1})`).join("; ");
+      return [
+        `"${o.id}"`,
+        `"${o.date}"`,
+        `"${(o.customer_name || o.customer || '').replace(/"/g, '""')}"`,
+        `"${o.customer_email || o.email || ''}"`,
+        `"${o.customer_phone || o.phone || ''}"`,
+        `"${(o.customer_address || o.address || '').replace(/"/g, '""')}"`,
+        `"${o.payment_method || ''}"`,
+        Number(o.total || 0).toFixed(2),
+        `"${o.status || 'Pendiente'}"`,
+        `"${itemsSummary.replace(/"/g, '""')}"`
+      ].join(",");
+    });
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+    Storage.downloadFile(`reporte_ordenes_${new Date().toISOString().slice(0, 10)}.csv`, csvContent, "text/csv;charset=utf-8;");
+  },
+
+  exportInventoryCsv: () => {
+    const products = Storage.getProducts();
+    const headers = ["ID", "SKU", "Producto", "Categoria", "Proveedor", "Costo USD", "Precio Venta USD", "Margen Bruto USD", "Margen %", "Stock Unids", "Costo Total Inventario", "Valor Comercial Total"];
+    const rows = products.map(p => {
+      const cost = Number(p.costPrice || (p.price * 0.45));
+      const price = Number(p.price);
+      const profit = price - cost;
+      const marginPct = price > 0 ? ((profit / price) * 100).toFixed(1) : "0.0";
+      const totalCost = cost * p.stock;
+      const totalRev = price * p.stock;
+      return [
+        p.id,
+        `"${p.sku || ''}"`,
+        `"${p.name.replace(/"/g, '""')}"`,
+        `"${p.categoryLabel || p.category}"`,
+        `"${(p.supplierName || '').replace(/"/g, '""')}"`,
+        cost.toFixed(2),
+        price.toFixed(2),
+        profit.toFixed(2),
+        `${marginPct}%`,
+        p.stock,
+        totalCost.toFixed(2),
+        totalRev.toFixed(2)
+      ].join(",");
+    });
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+    Storage.downloadFile(`reporte_inventario_${new Date().toISOString().slice(0, 10)}.csv`, csvContent, "text/csv;charset=utf-8;");
+  },
+
+  resetToFactoryDefaults: () => {
+    try {
+      localStorage.removeItem("ecommerce_products");
+      localStorage.removeItem("ecommerce_suppliers");
+      localStorage.removeItem("ecommerce_purchases");
+      localStorage.removeItem("ecommerce_orders");
+      localStorage.removeItem("ecommerce_cart");
+      localStorage.removeItem("ecommerce_store_config");
+      localStorage.removeItem("ecommerce_active_template");
+      localStorage.removeItem("ecommerce_custom_template_html");
+      localStorage.setItem("ecommerce_users", JSON.stringify(INITIAL_USERS));
+      localStorage.setItem("ecommerce_data_version", "v8_ecommerce_store");
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  trackOrder: (orderId) => {
+    const cleanId = (orderId || "").trim().toUpperCase();
+    if (!cleanId) return null;
+    const orders = Storage.getOrders();
+    return orders.find(o => 
+      o.id.toUpperCase() === cleanId || 
+      o.id.toUpperCase() === `ORD-${cleanId}` || 
+      o.id.toUpperCase() === `PED-${cleanId}` ||
+      (o.id.replace(/[^0-9]/g, "") === cleanId.replace(/[^0-9]/g, "") && cleanId.replace(/[^0-9]/g, "").length >= 3)
+    );
+  },
+
+  downloadFile: (filename, content, mimeType) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 150);
   }
 };
