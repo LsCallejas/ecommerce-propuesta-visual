@@ -611,7 +611,7 @@ const Storage = {
       return INITIAL_PRODUCTS;
     }
   },
-  saveProducts: (products, deletedId = null) => {
+  saveProducts: (products, deletedId = null, targetProduct = null) => {
     try {
       localStorage.setItem("ecommerce_products", JSON.stringify(products));
     } catch (e) {}
@@ -619,22 +619,21 @@ const Storage = {
     if (Storage.isOnline) {
       if (deletedId) {
         fetch(`${Storage.apiUrl}/products/${deletedId}`, { method: "DELETE" })
+          .then(() => Storage.syncFromPostgres(false))
           .catch(err => console.warn("Error eliminando producto en PostgreSQL:", err));
+      } else if (targetProduct) {
+        fetch(`${Storage.apiUrl}/products`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(targetProduct)
+        }).then(() => Storage.syncFromPostgres(false))
+          .catch(err => console.warn("Error guardando producto en PostgreSQL:", err));
       } else if (Array.isArray(products)) {
-        // Enviar actualizaciones a la base de datos
         products.forEach(p => {
-          fetch(`${Storage.apiUrl}/products/${p.id}`, {
-            method: "PUT",
+          fetch(`${Storage.apiUrl}/products`, {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(p)
-          }).then(res => {
-            if (res.status === 404) {
-              return fetch(`${Storage.apiUrl}/products`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(p)
-              });
-            }
           }).catch(err => console.warn("Error sincronizando producto en PostgreSQL:", err));
         });
       }

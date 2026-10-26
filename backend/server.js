@@ -187,34 +187,83 @@ app.get('/api/products', async (req, res) => {
 app.post('/api/products', async (req, res) => {
   try {
     const p = req.body;
-    const query = `
-      INSERT INTO products (
-        name, slug, sku, category, category_label, brand,
-        cost_price, sale_price, compare_at_price, stock,
-        supplier_id, image_url, badge, description
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
-      ) RETURNING *;
-    `;
     const slug = (p.name || 'producto').toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const sku = p.sku || `PRD-${Date.now().toString().slice(-6)}`;
-    const values = [
-      p.name,
-      slug,
-      sku,
-      p.category || 'general',
-      p.categoryLabel || p.category || 'General',
-      p.brand || 'Marca Oficial',
-      parseFloat(p.costPrice || p.cost_price || 0),
-      parseFloat(p.price || p.sale_price || 0),
-      p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
-      parseInt(p.stock || 0, 10),
-      p.supplierId || 'sup-1',
-      p.image || p.image_url || 'img/tech_auriculares.jpg',
-      p.badge || 'NUEVO',
-      p.description || ''
-    ];
-    const result = await pool.query(query, values);
+    let result;
+
+    if (p.id) {
+      const query = `
+        INSERT INTO products (
+          id, name, slug, sku, category, category_label, brand,
+          cost_price, sale_price, compare_at_price, stock,
+          supplier_id, image_url, badge, description
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          slug = EXCLUDED.slug,
+          sku = EXCLUDED.sku,
+          category = EXCLUDED.category,
+          category_label = EXCLUDED.category_label,
+          brand = EXCLUDED.brand,
+          cost_price = EXCLUDED.cost_price,
+          sale_price = EXCLUDED.sale_price,
+          compare_at_price = EXCLUDED.compare_at_price,
+          stock = EXCLUDED.stock,
+          supplier_id = EXCLUDED.supplier_id,
+          image_url = EXCLUDED.image_url,
+          badge = EXCLUDED.badge,
+          description = EXCLUDED.description
+        RETURNING *;
+      `;
+      const values = [
+        parseInt(p.id, 10),
+        p.name,
+        slug,
+        sku,
+        p.category || 'general',
+        p.categoryLabel || p.category || 'General',
+        p.brand || 'Marca Oficial',
+        parseFloat(p.costPrice || p.cost_price || 0),
+        parseFloat(p.price || p.sale_price || 0),
+        p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+        parseInt(p.stock || 0, 10),
+        p.supplierId || 'sup-1',
+        p.image || p.image_url || 'img/tech_auriculares.jpg',
+        p.badge || 'NUEVO',
+        p.description || ''
+      ];
+      result = await pool.query(query, values);
+      await pool.query("SELECT setval(pg_get_serial_sequence('products', 'id'), (SELECT COALESCE(MAX(id), 1) FROM products));");
+    } else {
+      const query = `
+        INSERT INTO products (
+          name, slug, sku, category, category_label, brand,
+          cost_price, sale_price, compare_at_price, stock,
+          supplier_id, image_url, badge, description
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+        ) RETURNING *;
+      `;
+      const values = [
+        p.name,
+        slug,
+        sku,
+        p.category || 'general',
+        p.categoryLabel || p.category || 'General',
+        p.brand || 'Marca Oficial',
+        parseFloat(p.costPrice || p.cost_price || 0),
+        parseFloat(p.price || p.sale_price || 0),
+        p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+        parseInt(p.stock || 0, 10),
+        p.supplierId || 'sup-1',
+        p.image || p.image_url || 'img/tech_auriculares.jpg',
+        p.badge || 'NUEVO',
+        p.description || ''
+      ];
+      result = await pool.query(query, values);
+    }
     res.status(201).json({ success: true, product: result.rows[0] });
   } catch (error) {
     res.status(500).json({ error: error.message });

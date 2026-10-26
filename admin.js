@@ -488,12 +488,7 @@ const admin = {
   },
 
   updateOrderStatus(orderId, newStatus) {
-    const orders = Storage.getOrders();
-    const order = orders.find((o) => o.id === orderId);
-    if (!order) return;
-
-    order.status = newStatus;
-    Storage.saveOrders(orders);
+    Storage.updateOrderStatus(orderId, newStatus);
     this.renderOrdersTable();
     this.renderDashboard();
     this.showToast(`📑 Orden ${orderId} actualizada a "${newStatus}"`);
@@ -1701,6 +1696,7 @@ const admin = {
 
     let products = Storage.getProducts();
 
+    let target = null;
     if (id) {
       // Update existing
       const prod = products.find((p) => p.id === parseInt(id));
@@ -1717,6 +1713,7 @@ const admin = {
         prod.brand = brand;
         prod.image = image;
         prod.description = description;
+        target = prod;
       }
       this.showToast(`✅ Producto "${name}" actualizado con margen calculado.`);
     } else {
@@ -1748,10 +1745,11 @@ const admin = {
         }
       };
       products.unshift(newProduct);
+      target = newProduct;
       this.showToast(`🎉 ¡Nuevo producto "${name}" registrado con éxito!`);
     }
 
-    Storage.saveProducts(products);
+    Storage.saveProducts(products, null, target);
     this.closeProductModal();
     this.renderProductsTable();
     this.renderInventoryTable();
@@ -1764,7 +1762,7 @@ const admin = {
 
     let products = Storage.getProducts();
     products = products.filter((p) => p.id !== productId);
-    Storage.saveProducts(products);
+    Storage.saveProducts(products, productId);
 
     this.renderProductsTable();
     this.renderInventoryTable();
