@@ -1,0 +1,14 @@
+.git
+.gitignore
+*.bat
+*.zip
+*.tar.gz
+README.md
+LEEME_CLIENTE.md
+MANUAL_PROYECTO_ECOMMERCE.md
+PLAN_IMPLEMENTACION_PRODUCCION.md
+node_modules
+.vscode
+.idea
+Thumbs.db
+.DS_Store

@@ -29,32 +29,54 @@ A diferencia de los prototipos convencionales, el sistema implementa:
 
 ---
 
-## ⚡ Inicio Rápido (En 1 Clic)
+## ⚡ Opciones de Inicio y Ejecución
 
-1. Descarga o clona el repositorio.
-2. Ejecuta el archivo:
+La plataforma implementa una **estrategia de ejecución dual**:
+
+### Opción 1: Con Docker Compose (Entorno de Producción Oficial)
+Si tienes **Docker Desktop** instalado:
+1. Haz doble clic en [`docker-iniciar.bat`](docker-iniciar.bat) o ejecuta:
+   ```bash
+   docker compose up -d --build
+   ```
+2. Esto levantará:
+   - **Servidor Web Nginx**: `http://localhost:8080/index.html` (Panel Admin: `/admin.html`).
+   - **Base de Datos PostgreSQL 16**: `localhost:5432` (Base: `ecommerce_db`, Usuario: `daniel_admin`, Clave: `DanielAdmin2026Secure!`).
+3. Para detener los contenedores: [`docker-detener.bat`](docker-detener.bat) o `docker compose down`.
+
+### Opción 2: Portátil Sin Dependencias (En 1 Clic)
+Si no tienes Docker en la máquina:
+1. Ejecuta el archivo:
    ```cmd
    iniciar_demo.bat
    ```
-3. O simplemente abre el archivo [`index.html`](index.html) en tu navegador web preferido (Chrome, Edge, Firefox, Brave).
-4. El servidor local correrá en: `http://localhost:8080/index.html`.
+2. O simplemente abre [`index.html`](index.html) en tu navegador web (Chrome, Edge, Brave, Firefox).
+3. El servidor local correrá en: `http://localhost:8080/index.html`.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
 ```text
-├── index.html                    # Tienda pública para clientes y compradores
-├── styles.css                    # Sistema de diseño, tokens CSS y los 5 arquetipos visuales
-├── app.js                        # Lógica reactiva de catálogo, carrito, filtros y checkout
-├── data.js                       # Capa de datos relacional y catálogo de productos
-├── admin.html                    # Panel de control y backoffice administrativo
-├── admin.css                     # Estilos del dashboard, analítica y personalizador
-├── admin.js                      # Lógica de analítica, proveedores, órdenes y plantillas
-├── iniciar_demo.bat              # Script de arranque en 1 clic (servidor local)
-├── MANUAL_PROYECTO_ECOMMERCE.md  # Manual técnico y operativo completo (9 capítulos)
-├── LEEME_CLIENTE.md              # Guía rápida de presentación
-└── img/                          # Galería de imágenes y productos del catálogo
+├── Dockerfile                        # Imagen de producción Nginx Alpine
+├── docker-compose.yml                # Orquestación de Web Nginx + PostgreSQL 16
+├── nginx.conf                        # Configuración de Nginx con Gzip y cabeceras de seguridad
+├── docker-iniciar.bat                # Lanzador de Docker Compose en 1 clic
+├── docker-detener.bat                # Detenedor de Docker Compose
+├── database/
+│   └── init.sql                      # DDL oficial de PostgreSQL 16 (7 tablas, vista e índices)
+├── index.html                        # Tienda pública para clientes y compradores
+├── styles.css                        # Sistema de diseño, tokens CSS y los 5 arquetipos visuales
+├── app.js                            # Lógica reactiva de catálogo, carrito, filtros, checkout y tracking
+├── data.js                           # Capa de datos relacional (Adapter Pattern) y catálogo
+├── admin.html                        # Panel de control y backoffice administrativo
+├── admin.css                         # Estilos del dashboard, analítica y personalizador
+├── admin.js                          # Lógica de analítica, proveedores, órdenes, auditoría y plantillas
+├── iniciar_demo.bat                  # Script de arranque en 1 clic (servidor local sin dependencias)
+├── MANUAL_PROYECTO_ECOMMERCE.md      # Manual técnico y operativo completo (9 capítulos)
+├── PLAN_IMPLEMENTACION_PRODUCCION.md # Plan de transición empresarial con PostgreSQL y Docker
+├── LEEME_CLIENTE.md                  # Guía rápida de presentación
+└── img/                              # Galería de imágenes y productos del catálogo
 ```
 
 ---

@@ -48,28 +48,38 @@ El sistema **auto-inicializa los datos en el navegador** de quien abra el proyec
 
 ## 🚀 Cómo Probar la Demostración
 
-1. Ejecuta el servidor ligero con doble clic en **`iniciar_demo.bat`** o ejecuta:
-   ```powershell
-   python -m http.server 8080
-   ```
+### Opción 1: Con Docker Compose (Producción Nginx + PostgreSQL 16)
+Si tienes Docker Desktop instalado:
+- Ejecuta con doble clic **[`docker-iniciar.bat`](file:///c:/Users/pc/OneDrive/Desktop/ecommerce/ecommerce_propuesta_visual/docker-iniciar.bat)** o corre `docker compose up -d --build`.
+- Abre automáticamente la tienda en `http://localhost:8080/index.html` y conecta con PostgreSQL 16 en el puerto 5432.
+- Para detener: **[`docker-detener.bat`](file:///c:/Users/pc/OneDrive/Desktop/ecommerce/ecommerce_propuesta_visual/docker-detener.bat)**.
+
+### Opción 2: Portátil Sin Dependencias (En 1 Clic)
+1. Ejecuta el servidor ligero con doble clic en **[`iniciar_demo.bat`](file:///c:/Users/pc/OneDrive/Desktop/ecommerce/ecommerce_propuesta_visual/iniciar_demo.bat)** o abre directamente `index.html`.
 2. Abre en tu navegador:
    - **Tienda:** [http://localhost:8080/index.html](http://localhost:8080/index.html)
    - **Panel Admin:** [http://localhost:8080/admin.html](http://localhost:8080/admin.html)
-3. En la cabecera pulsa **`👤 Iniciar Sesión`** para alternar con 1 clic entre Dueño y Comprador.
+3. En la cabecera pulsa **`👤 Iniciar Sesión`** para alternar con 1 clic entre Dueño (`daniel@tienda.com` / `admin123`) y Comprador (`cliente@tienda.com` / `123`).
 
 ---
 
 ## 📁 Estructura de Archivos
 
-| Archivo | Función |
+| Archivo / Carpeta | Función |
 | :--- | :--- |
+| **`Dockerfile`** | Imagen Nginx Alpine de alta velocidad con Gzip y cabeceras de seguridad. |
+| **`docker-compose.yml`** | Orquestación multi-contenedor (Web Nginx + DB PostgreSQL 16 con volumen). |
+| **`database/init.sql`** | DDL oficial de PostgreSQL 16 (7 tablas, vista analítica e índices B-Tree). |
+| **`docker-iniciar.bat`** | Lanzador en 1 clic de Docker Compose para Windows. |
+| **`docker-detener.bat`** | Detenedor de contenedores Docker. |
+| **`PLAN_IMPLEMENTACION_PRODUCCION.md`** | Plan maestro de transición a producción con PostgreSQL y Docker. |
 | **`MANUAL_PROYECTO_ECOMMERCE.md`** | Manual completo técnico y de usuario del sistema. |
-| **`index.html`** | Tienda pública orientada al cliente. |
+| **`index.html`** | Tienda pública orientada al cliente con seguimiento de pedidos y factura. |
 | **`styles.css`** | Diseño visual de la tienda y arquitecturas de las 5 plantillas. |
-| **`app.js`** | Lógica de la tienda (catálogo, carrito, checkout, roles y plantillas). |
+| **`app.js`** | Lógica de la tienda (catálogo, carrito, checkout, tracking de pedidos y facturación). |
 | **`admin.html`** | Panel administrativo y backoffice del dueño. |
 | **`admin.css`** | Estilos visuales del backoffice estilo SaaS. |
-| **`admin.js`** | Lógica administrativa (KPIs, CRUD, proveedores, finanzas, personalizador Wix y plantillas). |
-| **`data.js`** | Motor de base de datos persistente inicial (`localStorage`) con semillas de datos. |
-| **`iniciar_demo.bat`** | Lanzador automático para Windows. |
+| **`admin.js`** | Lógica administrativa (KPIs, CRUD, proveedores, auditoría, respaldos y plantillas). |
+| **`data.js`** | Capa de persistencia desacoplada (*Repository Pattern*) con exportaciones CSV y JSON. |
+| **`iniciar_demo.bat`** | Lanzador automático para Windows sin dependencias. |
 | **`img/`** | Fotografías en alta resolución del catálogo. |

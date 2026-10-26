@@ -207,38 +207,53 @@ Cada plantilla representa una arquitectura visual y funcional distinta inspirada
 
 ---
 
-## 8. Cómo Ejecutar, Probar y Compartir el Proyecto
+---
 
-### Opción A: Ejecución Local en Windows (Recomendada)
-1. Extraer la carpeta `ecommerce_propuesta_visual`.
-2. Abrir una terminal en esa carpeta y ejecutar el servidor ligero:
-   ```powershell
-   python -m http.server 8080
+## 8. Cómo Ejecutar, Probar y Desplegar el Proyecto
+
+La plataforma soporta una **arquitectura de ejecución dual**:
+
+### Opción A: Despliegue con Docker Compose (Entorno Oficial de Producción)
+Recomendado si cuentas con **Docker Desktop** instalado:
+1. Haz doble clic en [`docker-iniciar.bat`](docker-iniciar.bat) o ejecuta en la terminal:
+   ```bash
+   docker compose up -d --build
    ```
-   *(O ejecutar el archivo incluido `iniciar_demo.bat` con doble clic).*
-3. Abrir en el navegador:
-   - **Tienda:** [http://localhost:8080/index.html](http://localhost:8080/index.html)
-   - **Panel Admin:** [http://localhost:8080/admin.html](http://localhost:8080/admin.html)
+2. Servicios creados y orquestados:
+   - **Servidor Web Nginx Alpine**: Servidor de alta velocidad en `http://localhost:8080`.
+   - **Base de Datos PostgreSQL 16**: Motor relacional en el puerto `5432` con volumen persistente `postgres_data`.
+   - Inicialización automática del script [`database/init.sql`](database/init.sql).
+3. Para detener los contenedores: ejecuta [`docker-detener.bat`](docker-detener.bat) o `docker compose down`.
 
-### Opción B: Compartir en la Nube (Hosting Gratuito)
-Dado que el proyecto no requiere base de datos externa ni servidor backend:
-- Puedes subir la carpeta directamente a **Vercel**, **Netlify**, **GitHub Pages** o cualquier hosting compartido cPanel tradicional arrastrando los archivos por FTP. Funcionará de forma idéntica y al 100% en cualquier servidor web del mundo.
+### Opción B: Ejecución Local en Windows Sin Dependencias (En 1 Clic)
+1. Extraer la carpeta `ecommerce_propuesta_visual`.
+2. Ejecutar el archivo incluido [`iniciar_demo.bat`](iniciar_demo.bat) con doble clic (inicia servidor local en puerto 8080).
+3. Abrir en el navegador:
+   - **Tienda Pública:** [http://localhost:8080/index.html](http://localhost:8080/index.html)
+   - **Panel Administrativo:** [http://localhost:8080/admin.html](http://localhost:8080/admin.html)
+
+### Opción C: Compartir en la Nube
+Puedes subir la carpeta directamente a servicios como **Vercel**, **Netlify**, **Render** o servidores VPS Linux mediante Docker.
 
 ---
 
-## 9. Cómo Personalizar o Resetear la Base de Datos
+## 9. Base de Datos Relacional PostgreSQL 16 & Respaldos
 
-### Restablecer a Valores de Fábrica:
-Si durante las pruebas se eliminaron productos o se modificaron datos y se desea volver al catálogo original de fábrica:
-1. En la consola del navegador (`F12`), escribe:
-   ```javascript
-   localStorage.clear();
-   location.reload();
-   ```
-2. O bien, en el Panel Administrativo (`admin.html`), ve a **Personalizar Tienda** y haz clic en el botón inferior **`Restablecer Valores de Fábrica`**.
+### 🗄️ Esquema PostgreSQL de Producción ([`database/init.sql`](database/init.sql))
+El sistema incluye el script DDL completo para PostgreSQL 16 con:
+- `store_config`: Configuración institucional, colores de marca y template activo.
+- `users`: Usuarios y control de acceso (Daniel Campos `admin@tienda.com`).
+- `suppliers`: Registro de proveedores y términos de pago.
+- `products`: Catálogo con SKU, precios de costo, precios de venta y stock.
+- `purchases`: Facturación de abastecimiento a proveedores.
+- `orders` y `order_items`: Gestión relacional de pedidos y detalle de productos.
+- `v_inventory_financials`: Vista analítica de márgenes de ganancia y valorización de inventario.
 
-### Modificar Productos Semilla Directamente:
-Abre `data.js` en cualquier editor de texto:
-- `INITIAL_PRODUCTS`: Agrega o edita los productos base, costos de adquisición (`costPrice`) y precios de venta (`price`).
-- `INITIAL_SUPPLIERS`: Configura tus proveedores reales con sus números de contacto y condiciones de pago.
-- `INITIAL_STORE_CONFIG`: Define el nombre comercial y teléfono oficial que tendrá la tienda por defecto.
+### 🛡️ Respaldos y Auditoría en el Backoffice
+En el Panel Administrativo (`admin.html` > pestaña **Respaldos & Auditoría**):
+1. **Exportar Órdenes a CSV**: Descarga en 1 clic de todas las ventas para Microsoft Excel.
+2. **Exportar Inventario a CSV**: Reporte de stock, costos y márgenes de ganancia.
+3. **Respaldo JSON Completo**: Descarga de una instantánea completa de la base de datos para migración.
+4. **Importar Respaldo**: Restauración de una copia previamente guardada.
+5. **Restablecer Valores de Fábrica**: Botón protegido con confirmación para reiniciar los datos a su estado original de demostración.
+
