@@ -110,50 +110,60 @@ El proyecto está diseñado bajo una **estrategia de ejecución dual**:
 1. **Modo Docker de Producción**: Orquestación multi-contenedor con Nginx de alto rendimiento sirviendo la aplicación web y PostgreSQL 16 manejando la base de datos relacional.
 2. **Modo Portátil Sin Dependencias**: Ejecución directa en 1 clic mediante `iniciar_demo.bat` para defensas o pruebas en computadoras sin Docker instalado.
 
-### 3.1 Estructura de Servicios en Docker Compose
+### 3.1 Estructura de Servicios en Docker Compose (Arquitectura 3-Tier Enterprise)
 
 ```mermaid
 graph LR
     subgraph Host["Máquina Anfitriona"]
-        Browser["Navegador Web (Usuario / Evaluador)"]
+        Browser["Navegador Web (Daniel Campos / Jurado)"]
     end
     
-    subgraph DockerCompose["Red Docker (ecommerce_network)"]
-        subgraph WebService["Servicio: web (Nginx 1.25 Alpine)"]
-            Nginx["Nginx Web Server"]
-            Static["HTML5 / CSS3 / Vanilla JS"]
+    subgraph DockerCompose["Red Docker Bridge (ecommerce_network)"]
+        subgraph WebService["Servicio 1: web (Nginx 1.25 Alpine :8080)"]
+            Nginx["Nginx Reverse Proxy & Static Server"]
+            Static["Frontend HTML5 / CSS3 / Vanilla JS"]
         end
         
-        subgraph DBService["Servicio: db (PostgreSQL 16 Alpine)"]
-            Postgres["Motor PostgreSQL 16"]
-            Init["Auto-ejecución database/init.sql"]
+        subgraph APIService["Servicio 2: api (Node.js 20 Alpine :3000)"]
+            Express["Micro-Backend Express REST"]
+            PgPool["Connection Pool (pg)"]
+        end
+
+        subgraph DBService["Servicio 3: db (PostgreSQL 16 Alpine :5432)"]
+            Postgres["Motor PostgreSQL 16 ACID"]
+            Init["DDL Oficial database/init.sql"]
             Volume[("Volumen Persistente: postgres_data")]
         end
     end
 
-    Browser -- "http://localhost:8080" --> Nginx
-    Nginx --> Static
+    Browser -- "HTTP :8080 (UI & Admin)" --> Nginx
+    Nginx -- "Archivos Estáticos" --> Static
+    Nginx -- "Proxy /api/*" --> Express
+    Express --> PgPool
+    PgPool -- "Consultas SQL / Transacciones" --> Postgres
     Postgres --> Volume
     Init -.-> Postgres
-    Browser -. "Acceso Directo DB (localhost:5432)" .-> Postgres
+    Browser -. "Acceso Directo psql/DBeaver (:5432)" .-> Postgres
 ```
 
-### 3.2 Componentes Docker Creados
+### 3.2 Componentes Docker Implementados
 
 - **[`Dockerfile`](Dockerfile)**:
   - Imagen base ultraligera `nginx:1.25-alpine` (~25MB).
-  - Configuración optimizada de Nginx con compresión Gzip, cabeceras de seguridad HTTP (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`) y caché de assets estáticos.
-  - Healthcheck integrado con `wget`.
+  - Configuración personalizada en [`nginx.conf`](nginx.conf) con proxy inverso `/api/ -> http://api:3000`, compresión Gzip, cabeceras de seguridad HTTP (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`) y volumen montado en vivo.
+- **[`backend/`](backend/) (Micro-Backend REST API)**:
+  - Servidor Express en Node.js 20 Alpine con pool de conexiones `pg` nativo hacia PostgreSQL 16.
+  - Endpoints REST para `/api/health`, `/api/config`, `/api/products`, `/api/suppliers`, `/api/purchases`, `/api/orders`, `/api/financials`.
+  - Transacciones atómicas ACID para órdenes y compras de inventario.
 - **[`docker-compose.yml`](docker-compose.yml)**:
-  - Servicio `web`: Compila la imagen y mapea el puerto `8080:80`.
-  - Servicio `db`: Levanta `postgres:16-alpine` en el puerto `5432:5432`.
-  - Montaje automático de [`database/init.sql`](database/init.sql) en `/docker-entrypoint-initdb.d/01_init.sql` para crear tablas y datos semilla al arrancar por primera vez.
-  - Volumen persistente `postgres_data` para garantizar que la información no se pierda al reiniciar contenedores.
-  - Regla de dependencia `depends_on` con verificación de salud (`condition: service_healthy`).
+  - Orquestación de 3 servicios interconectados (`db`, `api`, `web`).
+  - Base de datos `postgres:16-alpine` en el puerto `5432:5432`.
+  - Montaje automático de [`database/init.sql`](database/init.sql) para inicializar esquema relacional completo.
+  - Volumen persistente `ecommerce_postgres_data` para proteger los datos de la tienda.
 - **[`docker-iniciar.bat`](docker-iniciar.bat)**:
-  - Script para Windows que verifica si Docker está disponible, construye las imágenes y abre automáticamente el navegador en `http://localhost:8080`.
+  - Script para Windows que levanta los 3 contenedores y abre la plataforma en el navegador.
 - **[`docker-detener.bat`](docker-detener.bat)**:
-  - Script para detener los servicios de Docker preservando los volúmenes de datos.
+  - Script para pausar los contenedores preservando la información en el volumen persistente.
 
 ---
 

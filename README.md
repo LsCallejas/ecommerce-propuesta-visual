@@ -33,16 +33,18 @@ A diferencia de los prototipos convencionales, el sistema implementa:
 
 La plataforma implementa una **estrategia de ejecución dual**:
 
-### Opción 1: Con Docker Compose (Entorno de Producción Oficial)
-Si tienes **Docker Desktop** instalado:
+### Opción 1: Con Docker Compose (Entorno de Producción Oficial con PostgreSQL 16)
+Si tienes **Docker / WSL** en el sistema:
 1. Haz doble clic en [`docker-iniciar.bat`](docker-iniciar.bat) o ejecuta:
    ```bash
    docker compose up -d --build
    ```
-2. Esto levantará:
-   - **Servidor Web Nginx**: `http://localhost:8080/index.html` (Panel Admin: `/admin.html`).
-   - **Base de Datos PostgreSQL 16**: `localhost:5432` (Base: `ecommerce_db`, Usuario: `daniel_admin`, Clave: `DanielAdmin2026Secure!`).
-3. Para detener los contenedores: [`docker-detener.bat`](docker-detener.bat) o `docker compose down`.
+2. Esto levantará los 3 servicios empresariales interconectados:
+   - **Servidor Web Nginx** (`ecommerce_web_app` en puerto `:8080`): Interfaz visual de la tienda y panel administrativo.
+   - **Micro-Backend REST API** (`ecommerce_api_service` en puerto `:3000`): Controlador Express con pool de conexiones ACID hacia PostgreSQL 16.
+   - **Base de Datos Relacional PostgreSQL 16** (`ecommerce_postgres_db` en puerto `:5432`): Esquema relacional con tablas de productos, órdenes, proveedores y compras.
+3. Al ingresar a `http://localhost:8080`, el indicador interactivo `🟢 PostgreSQL 16 (En Vivo)` permite consultar la telemetría en tiempo real y verificar la conexión con la base de datos.
+4. Para detener los contenedores preservando la base de datos: [`docker-detener.bat`](docker-detener.bat) o `docker compose down`.
 
 ### Opción 2: Portátil Sin Dependencias (En 1 Clic)
 Si no tienes Docker en la máquina:
